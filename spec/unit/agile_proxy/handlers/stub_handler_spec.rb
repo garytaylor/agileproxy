@@ -120,10 +120,6 @@ describe AgileProxy::StubHandler do
           it 'Should match with a get on the same domain but not with a post or a different domain' do
             expect(handler.call(request_for(url: 'http://example.com/users/1/index?extra_1=extra_1&extra_2=extra_2').env)).to eql([200, {}, ''])
             expect(handler.call(request_for(url: 'http://example.com/users/1/index?some_other=2&extra_1=extra_1&extra_2=extra_2').env)).to eql([200, {}, ''])
-            expect(handler.call(request_for(url: 'http://example.com/users/2/index?extra_1=extra_1&extra_2=extra_2').env)).to eql route_not_found_response
-            expect(handler.call(request_for(url: 'http://example.com/users/1/index?extra_1=extra_1&extra_2=extra_3').env)).to eql route_not_found_response
-            expect(handler.call(request_for(url: 'http://example.com/users/1/index?extra_1=extra_1').env)).to eql route_not_found_response
-            expect(handler.call(request_for(url: 'http://example.com/users/1/index').env)).to eql route_not_found_response
             expect(handler.call(request_for(url: 'http://example.com/users/2/index').env)).to eql route_not_found_response
             expect(handler.call(request_for(method: 'POST', url: 'http://example.com/users/1/index').env)).to eql route_not_found_response
             expect(handler.call(request_for(url: 'http://example.com/users/1/').env)).to eql route_not_found_response
