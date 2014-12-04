@@ -1,0 +1,8 @@
+node_modules/
+log/test.log
+.idea/
+.ruby-version
+assets/ui/bower_components
+.yardoc
+db/*.db
+coverage/

@@ -1,0 +1,39 @@
+<!doctype html>
+<html>
+<head>
+    <script src="ui/bower_components/jquery/dist/jquery.js"></script>
+    <script src="ui/bower_components/ace-builds/src-min-noconflict/ace.js"></script>
+    <script src="ui/bower_components/angular/angular.js"></script>
+    <script src="ui/bower_components/angular-bootstrap/ui-bootstrap.js"></script>
+    <script src="ui/bower_components/angular-bootstrap/ui-bootstrap-tpls.js"></script>
+    <script src="ui/bower_components/angular-ui-ace/ui-ace.js"></script>
+    <script src="ui/app/app.js"></script>
+    <script src="ui/app/model/RequestSpec.js"></script>
+    <script src="ui/app/controller/main.js"></script>
+    <script src="ui/app/controller/Stubs.js"></script>
+    <script src="ui/app/service/Dialog.js"></script>
+    <script src="ui/app/service/Stub.js"></script>
+    <script src="ui/app/service/DomId.js"></script>
+    <script src="ui/app/service/Error.js"></script>
+    <script src="ui/app/directive/AppEnhancedFormElement.js"></script>
+    <script src="ui/app/directive/AppResponseEditor.js"></script>
+    <script src="ui/app/directive/AppFor.js"></script>
+    <script src="ui/app/routes.js"></script>
+    <script src="ui/bower_components/angular-route/angular-route.js"></script>
+    <script src="ui/bower_components/angular-resource/angular-resource.js"></script>
+    <script src="ui/bower_components/angular-restmod/dist/angular-restmod-bundle.js"></script>
+    <script src="ui/app/AgileProxyApi.js"></script>
+    <link rel="stylesheet" href="ui/bower_components/bootstrap/dist/css/bootstrap.css" />
+    <link rel="stylesheet" href="ui/bower_components/bootstrap/dist/css/bootstrap-theme.css" />
+    <link rel="stylesheet" href="ui/css/main.css" />
+</head>
+<body ng-app="AgileProxy" class="container-fluid">
+<div class="navbar navbar-inverse">
+    <a href="#status" class="navbar-brand">Status</a>
+    <a href="#stubs" class="navbar-brand">Stubs</a>
+</div>
+<div>
+    <ng-view></ng-view>
+</div>
+</body>
+</html>

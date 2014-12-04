@@ -1,0 +1,78 @@
+<form name="editResponseForm" class="form-horizontal" novalidate>
+    <div class="form-group">
+        <label app-for="name" class="col-xs-2">Name</label>
+        <div class="col-xs-10">
+            <input name="name" class="form-control" type="text" ng-model="response.name"/>
+        </div>
+    </div>
+    <div class="form-group">
+        <label app-for="contentType" class="col-xs-2">Content Type</label>
+        <div class="col-xs-10">
+            <select ng-change="onContentTypeChange(response.contentType)" name="contentType" class="form-control" ng-model="response.contentType">
+                <option value="text/html">Text / HTML</option>
+                <option value="application/json">JSON</option>
+                <option value="application/javascript">Javascript</option>
+                <option value="text/plain">Plain Text</option>
+            </select>
+        </div>
+    </div>
+    <div class="form-group">
+        <label app-for="statusCode" class="col-xs-2">Status Code</label>
+        <div class="col-xs-10">
+            <select name="statusCode" class="form-control" ng-model="response.statusCode">
+                <option value="200">200 OK</option>
+                <option value="404">404 Not Found</option>
+                <option value="100">100 Continue</option>
+                <option value="101">101 Switching Protocols</option>
+                <option value="102">102 Processing</option>
+                <option value="201">201 Created</option>
+                <option value="202">202 Accepted</option>
+                <option value="203">203 Non-Authoritative Information</option>
+                <option value="204">204 No Content</option>
+                <option value="205">205 Reset Content</option>
+                <option value="206">206 Partial Content</option>
+                <option value="207">207 Multi-Status</option>
+                <option value="208">208 Already Reported</option>
+                <option value="226">226 IM Used</option>
+                <option value="300">300 Multiple Choices</option>
+                <option value="301">301 Moved Permanently</option>
+                <option value="302">302 Found</option>
+                <option value="303">303 See Other</option>
+                <option value="304">304 Not Modified</option>
+                <option value="305">305 Use Proxy</option>
+                <option value="306">306 Switch Proxy</option>
+                <option value="307">307 Temporary Redirect</option>
+                <option value="308">308 Permanent Redirect</option>
+                <option value="400">400 Bad Request</option>
+                <option value="401">401 Unauthorized</option>
+                <option value="402">402 Payment Required</option>
+                <option value="403">403 Forbidden</option>
+                <option value="405">405 Method Not Allowed</option>
+                <option value="406">406 Not Acceptible</option>
+                <option value="407">407 Proxy Authentication Required</option>
+                <option value="408">408 Request Timeout</option>
+                <option value="409">409 Conflict</option>
+                <option value="410">410 Gone</option>
+                <option value="411">411 Length Required</option>
+                <option value="422">422 Unprocessable Entity</option>
+                <option value="500">500 Internal Server Error</option>
+                <option value="501">501 Not Implemented</option>
+            </select>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="text-center">
+            <label app-for="content">Content</label>
+        </div>
+        <div>
+            <div class="btn-toolbar">
+                <label app-for="isTemplate">Is Template ?</label>
+                <input type="checkbox" ng-model="response.isTemplate" />
+
+                <button ng-show="hasBeautifier" ng-click="reformat()" class="btn btn-xs pull-right">Re Format</button>
+            </div>
+            <div style="height: 400px;" ui-ace="{mode: aceMode, useWrapMode: true, onLoad: onAceLoaded}" name="content" class="form-control" ng-model="response.content" required></div>
+        </div>
+    </div>
+
+</form>

@@ -1,0 +1,1 @@
+angular.module('AgileProxy', ['ui.bootstrap', 'ngRoute', 'ngResource', 'restmod', 'ui.ace']);

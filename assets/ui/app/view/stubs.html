@@ -1,0 +1,19 @@
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <span>HTTP Stubs</span>
+        <button ng-click="deleteSelection()" class="btn btn-xs pull-right" ng-disabled="selectionCount < 1">Delete Selected</button>
+        <button ng-click="addStub()" class="btn btn-xs pull-right">Add Stub</button>
+    </div>
+    <div class="panel-body">
+        <table class="table table-striped">
+            <tr ng-repeat="stub in requestSpecs">
+                <td>{{stub.http_method}}</td>
+                <td>{{stub.url}}</td>
+                <td><button ng-click="editStub(stub)" class="btn btn-xs btn-default">Edit</button></td>
+                <td><button ng-click="deleteStub(stub)" class="btn btn-xs btn-danger">Delete</button></td>
+                <td><input type="checkbox" ng-model="stub.$isSelected" ng-change="updateSelection(stub)" /></td>
+            </tr>
+
+        </table>
+    </div>
+</div>

@@ -1,0 +1,58 @@
+<div class="modal-header text-center text-uppercase">Edit / Create Stub</div>
+<div class="modal-body">
+    <div class="container-fluid">
+        <form name="editStubForm" class="form-horizontal" role="form" novalidate>
+            <div class="form-group">
+                <label app-for="httpMethod" class="col-xs-2">Method</label>
+                <div class="col-xs-3">
+                    <select name="httpMethod" class="form-control" ng-model="stub.httpMethod" required>
+                        <option value="GET">Get</option>
+                        <option value="POST">Post</option>
+                        <option value="UPDATE">Update</option>
+                        <option value="DELETE">Delete</option>
+                    </select>
+                </div>
+
+            </div>
+            <div class="form-group">
+                <label app-for="url" class="col-xs-2">URL</label>
+                <div class="col-xs-6">
+                    <input name="url" class="form-control" type="url" ng-model="stub.url" required/>
+                </div>
+                <label app-for="urlType" class="col-xs-1">Match</label>
+                <div class="col-xs-3">
+                    <select name="urlType" class="form-control" ng-model="stub.urlType">
+                        <option value="url">Exact</option>
+                        <option value="regex">Regex</option>
+                    </select>
+                </div>
+                
+            </div>
+            <div class="form-group">
+                <label app-for="conditions" class="col-xs-2">Conditions</label>
+                <div class="col-xs-10">
+                    <textarea rows="3" class="form-control" ng-model="stub.conditions"></textarea>
+                </div>
+
+
+            </div>
+            <div class="form-group">
+                <label app-for="note" class="col-xs-2">Note</label>
+                <div class="col-xs-10">
+                    <textarea name="note" class="form-control" ng-model="stub.note"></textarea>
+                </div>
+            </div>
+            <fieldset>
+                <legend>Response</legend>
+                <app-response-editor ng-model="stub.response"></app-response-editor>
+            </fieldset>
+        </form>
+    </div>
+
+</div>
+<div class="modal-footer">
+    <button ng-click="onCancel(stub)" class="btn btn-warning">Cancel</button>
+    <button ng-disabled="editStubForm.$invalid || editStubForm.$pristine" ng-click="onOk(stub)" class="btn btn-default">
+        OK
+    </button>
+</div>

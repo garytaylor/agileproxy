@@ -1,0 +1,36 @@
+AllCops:
+  Exclude:
+    - 'db/**/*'
+    - 'assets/**/*'
+    - !ruby/regexp /old_and_unused\.rb$/
+Style/Documentation:
+  Exclude:
+    - 'spec/**/*'
+    - 'bin/**/*'
+Metrics/AbcSize:
+  Max: 36
+  Exclude:
+    - 'spec/**/*'
+Metrics/CyclomaticComplexity:
+  Max: 5
+  Enabled: false
+Metrics/LineLength:
+  Max: 125
+  Exclude:
+    - 'spec/**/*'
+    - 'agile-proxy.gemspec'
+    - 'Guardfile'
+Metrics/MethodLength:
+  Max: 30
+  Exclude:
+    - 'spec/**/*'
+Metrics/PerceivedComplexity:
+  Max: 7
+  Exclude:
+    - 'spec/**/*'
+Style/TrivialAccessors:
+  Enabled: false
+Style/SpecialGlobalVars:
+  Enabled: false
+Style/RegexpLiteral:
+  Enabled: false
