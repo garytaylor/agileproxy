@@ -6,6 +6,9 @@ describe AgileProxy::Server do
     Class.new do
       def self.establish_connection(_options)
       end
+      class << self
+        attr_accessor :configurations
+      end
     end
   end
   let(:request_spec_server_class) { Class.new }
@@ -20,14 +23,9 @@ describe AgileProxy::Server do
   end
   context 'Initialization' do
     context 'In test environment' do
-      old_env = nil
       before :each do
-        old_env = ENV['RACK_ENV']
-        ENV['RACK_ENV'] = 'test'
+        expect(AgileProxy.config).to receive(:environment).and_return 'test'
         expect(active_record_base_class).to receive(:establish_connection).with('adapter' => 'sqlite3', 'database' => 'db/test.db')
-      end
-      after :each do
-        ENV['RACK_ENV'] = old_env
       end
       it 'Should establish the correct active record connection according to the environment' do
         subject
@@ -35,14 +33,9 @@ describe AgileProxy::Server do
       end
     end
     context 'In development environment' do
-      old_env = nil
       before :each do
-        old_env = ENV['RACK_ENV']
-        ENV['RACK_ENV'] = 'development'
+        expect(AgileProxy.config).to receive(:environment).and_return 'development'
         expect(active_record_base_class).to receive(:establish_connection).with('adapter' => 'sqlite3', 'database' => 'db/development.db')
-      end
-      after :each do
-        ENV['RACK_ENV'] = old_env
       end
       it 'Should establish the correct active record connection according to the environment' do
         subject
