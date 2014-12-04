@@ -65,5 +65,5 @@ Or if you want to use it as a standalone proxy server with a web user interface:
 
 ## TODO
 
-1. LOTS
+1. Asserting requests were made to specific urls and that they contained the correct parameters
 
