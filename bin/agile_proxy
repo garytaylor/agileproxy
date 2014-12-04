@@ -3,6 +3,7 @@ require 'agile_proxy'
 require 'thor'
 require 'rake'
 require 'active_record'
+require_relative '../db/seed'
 module AgileProxy
   include ActiveRecord::Tasks
   class Cli < Thor
@@ -55,7 +56,7 @@ module AgileProxy
 
     def setup_for_migrations(options)
       ActiveRecord::Tasks::DatabaseTasks.db_dir = options.data_dir
-      ActiveRecord::Tasks::DatabaseTasks.migrations_paths = [File.expand_path('../db/migrate', File.dirname(__FILE__))]
+      ActiveRecord::Tasks::DatabaseTasks.migrations_paths = [File.expand_path('../db/migrations', File.dirname(__FILE__))]
       ActiveRecord::Tasks::DatabaseTasks.env = options.env
       ActiveRecord::Tasks::DatabaseTasks.root = File.expand_path('..', __FILE__)
       ActiveRecord::Migrator.migrations_paths = ActiveRecord::Tasks::DatabaseTasks.migrations_paths
@@ -65,7 +66,10 @@ module AgileProxy
       ActiveRecord::Migrator.migrate(ActiveRecord::Migrator.migrations_paths, nil) do |migration|
         ENV["SCOPE"].blank? || (ENV["SCOPE"] == migration.scope)
       end
+    end
 
+    def seed_database
+      Seed.load_seed
     end
 
     def server
@@ -75,6 +79,7 @@ module AgileProxy
     def update_db
       ActiveRecord::Tasks::DatabaseTasks.create_current
       run_migrations
+      seed_database
       # Rake::Task['db:create'].invoke
       # Rake::Task['db:migrate'].invoke
 

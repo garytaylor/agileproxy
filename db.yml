@@ -1,10 +1,10 @@
 ---
 :development:
   :adapter: sqlite3
-  :database: "/home/gary/projects/ruby/http-flexible-proxy/db/development.db"
+  :database: "db/development.db"
 :test:
   :adapter: sqlite3
-  :database: "/home/gary/projects/ruby/http-flexible-proxy/db/test.db"
+  :database: "db/test.db"
 :production:
   :adapter: sqlite3
-  :database: "/home/gary/projects/ruby/http-flexible-proxy/db/production.db"
+  :database: "db/production.db"
