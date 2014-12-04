@@ -14,7 +14,7 @@ This has many uses, the main one that I currently use this for is for developing
 code is either a work in progress or not developed yet.
 Even if you are not into writing integration tests for your UI layer and prefer to just write code and test manually
 (which of course I do not recommend, but some people like working that way), then you can go to the user interface
-and simply tell the system how you want your fake server to look like -
+and simply tell the system what you want your fake server to look like -
 
 for example :- "When anything requests http://www.bing.com" then return "A fake bing page".
 
@@ -22,7 +22,7 @@ A particularly poor example, but hopefully demonstrates the idea.
 
 ## Overview
 
-The proxy sits between the clien (maybe a browser) and the server. You can either configure the browser manually to do so
+The proxy sits between the client (maybe a browser) and the server. You can either configure the browser manually to do so
 or via the selenium API if you are writing an integration test using selenium.
 Requests can simply pass through, or be intercepted in some way.
 By default, all requests pass through untouched.
@@ -59,18 +59,6 @@ end
 
 ## Installation
 
-When integrating this gem into your test suite :-
-
-Add this line to your application's Gemfile:
-
-    gem 'agile-proxy'
-
-And then execute:
-
-    $ bundle
-
-Or if you want to use it as a standalone proxy server with a web user interface:
-
     $ gem install agile-proxy
 
 If you want to use the built in user interface, you must have nodejs installed along with npm.  Once you have this,
@@ -101,4 +89,5 @@ This will start the server with default options.
 ## TODO
 
 1. Asserting requests were made to specific urls and that they contained the correct parameters
+2. Route matching on URL parameters from the query string
 
