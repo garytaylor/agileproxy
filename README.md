@@ -61,15 +61,6 @@ end
 
     $ gem install agile-proxy
 
-If you want to use the built in user interface, you must have nodejs installed along with npm.  Once you have this,
-install bower (unless you already have it) using the followig command line :-
-
-npm install -g bower
-
-Once bower is installed, install the bower modules using the following command line :-
-
-bower install
-
 Thats it - all done.
 
 ## Starting the server
