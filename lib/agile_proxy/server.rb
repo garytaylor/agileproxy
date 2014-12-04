@@ -8,7 +8,7 @@ require 'grape'
 require 'agile_proxy/api/root'
 require 'agile_proxy/servers/api'
 require 'agile_proxy/servers/request_spec'
-
+require 'forwardable'
 module AgileProxy
   #
   # This class is responsible for controlling the underlying proxy and web servers

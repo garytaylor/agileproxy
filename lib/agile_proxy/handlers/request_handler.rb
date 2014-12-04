@@ -1,6 +1,7 @@
 require 'agile_proxy/model/application'
 require 'agile_proxy/model/recording'
 require 'rack'
+require 'forwardable'
 module AgileProxy
   #
   # =The Central Request Handler
