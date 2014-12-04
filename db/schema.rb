@@ -59,16 +59,11 @@ ActiveRecord::Schema.define(version: 20141119174300) do
   create_table "responses", force: true do |t|
     t.string   "name"
     t.text     "content"
-    t.text     "json"
-    t.text     "jsonp"
-    t.text     "text"
-    t.string   "jsonp_callback"
-    t.string   "jsonp_callback_param"
     t.string   "content_type"
-    t.integer  "status_code",          default: 200
-    t.text     "headers",              default: "{}"
+    t.integer  "status_code",  default: 200
+    t.text     "headers",      default: "{}"
     t.boolean  "is_template"
-    t.float    "delay",                default: 0.0
+    t.float    "delay",        default: 0.0
     t.datetime "created_at"
     t.datetime "updated_at"
   end
