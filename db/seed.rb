@@ -15,7 +15,7 @@ module AgileProxy
       end
 
       def create_default_application
-        Application.create user_id: public_user.id, name: 'Default Application', username: 'public-app-1', password: 'password', id: 1 if (Application.where(name: 'Default Application').count == 0)
+        Application.create user_id: public_user.id, name: 'Default Application', username: nil, password: nil, id: 1 if (Application.where(name: 'Default Application').count == 0)
       end
 
       def public_user
