@@ -8,7 +8,7 @@ Gem::Specification.new do |gem|
   gem.summary       = 'An agile, programmable, controllable flexible proxy server for development or test use'
   gem.homepage      = 'https://github.com/garytaylor/agileproxy'
 
-  gem.files         = `git ls-files`.split($\)
+  gem.files         = `git ls-files`.split($\).concat(Dir.glob 'assets/ui/bower_components/**/*')
   gem.executables   = gem.files.grep(%r{^bin/}).map { |f| File.basename(f) }
   gem.test_files    = gem.files.grep(%r{^(test|spec|features)/})
   gem.name          = 'agile-proxy'
