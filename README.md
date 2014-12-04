@@ -1,3 +1,5 @@
+ [![Build Status](https://travis-ci.org/garytaylor/agileproxy.svg?branch=master)](https://travis-ci.org/garytaylor/agileproxy)
+ [![Gem Version](https://badge.fury.io/rb/agile-proxy.svg)](http://badge.fury.io/rb/agile-proxy)
 # agile-proxy
 
 A proxy server intended for use during development or in integration test environments such as selenium.
@@ -65,9 +67,19 @@ Thats it - all done.
 
 ## Starting the server
 
-agile_proxy start
+agile_proxy start 3100
 
-This will start the server with default options.
+This will start the server with default options on port 3100
+
+## Using The Built In User Interface
+
+Goto http://localhost:3020 in your browser
+
+## Configuring a browser to use the proxy
+
+The proxy url for the default application is
+
+http://public-app-1:password@localhost:3100
 
 ## Contributing
 
@@ -81,4 +93,5 @@ This will start the server with default options.
 
 1. Asserting requests were made to specific urls and that they contained the correct parameters
 2. Route matching on URL parameters from the query string
+3. Multi Application - The current infrastructure supports it, just need UI support - can already be done using REST
 
