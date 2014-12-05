@@ -5,6 +5,7 @@ angular.module('AgileProxy').config(function ($routeProvider) {
         templateUrl: '/ui/app/view/stubs.html',
         controller: 'StubsCtrl'
     }).otherwise({
-        templateUrl: '/ui/app/view/404.html'
+        templateUrl: '/ui/app/view/stubs.html',
+        controller: 'StubsCtrl'
     })
 });
