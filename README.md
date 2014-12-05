@@ -58,6 +58,11 @@ it 'should stub google' do
   page.should have_content("I'm not Google!")
 end
 ```
+## Support
+
+To discuss issues, goto https://groups.google.com/forum/#!forum/agileproxygem
+
+Or, if you have an issue that you want to report - please use the issues list in this repository
 
 ## Installation
 
