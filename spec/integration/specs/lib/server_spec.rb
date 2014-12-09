@@ -84,6 +84,12 @@ shared_examples_for 'a request stub' do |options = {}|
     expect(resp.status).to eql 200
     expect(resp.headers['Content-Type']).to eql 'text/html'
   end
+  it 'Should match the route by posted plain text data and the posted data can be output via the template' do
+    resp = http.post '/api/forums/my_forum', "posted_var=special_value\n", 'Content-Type' => 'text/plain'
+    expect(resp.body).to eql '<html><body><h1></h1><h2>special_value</h2><h3>my_forum</h3><p>This should get data from the POSTed data</p></body></html>'
+    expect(resp.status).to eql 200
+    expect(resp.headers['Content-Type']).to eql 'text/html'
+  end
   # it 'Should match the route by posted xml data and the posted data can be output via the template' do
   #   resp = http.post "/api/forums/my_forum", '<posted_var>special_value</posted_var>', {'Content-Type' => 'application/xml'}
   #   expect(resp.body).to eql '<html><body><h1></h1><h2>special_value</h2><h3>my_forum</h3><p>This should get data from the POSTed data</p></body></html>'

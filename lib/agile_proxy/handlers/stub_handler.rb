@@ -79,10 +79,19 @@ module AgileProxy
 
     def rack_app
       route_set = @route_set
+      text_handler = plain_text_handler
       Rack::Builder.new do
-        use ActionDispatch::ParamsParser
+        use ActionDispatch::ParamsParser, Mime::TEXT => text_handler
         use MergePostAndGetParams
         run route_set
+      end
+    end
+
+    def plain_text_handler
+      proc do |raw_post|
+        data_as_array = raw_post.split("\n").map {|line| line.split('=')}.flatten
+        data = Hash[*data_as_array]
+        ActionDispatch::Request::Utils.deep_munge(data).with_indifferent_access
       end
     end
   end
