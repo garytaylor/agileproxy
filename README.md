@@ -100,3 +100,5 @@ http://public-app-1:password@localhost:3100
 2. Route matching on URL parameters from the query string
 3. Multi Application - The current infrastructure supports it, just need UI support - can already be done using REST
 
+## History
+v0.1.8 Added support for plain text params parser - As DWR uses this (and maybe others)
