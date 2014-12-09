@@ -16,9 +16,10 @@ module AgileProxy
   class RequestSpec < ActiveRecord::Base
     belongs_to :application
     belongs_to :user
-    belongs_to :response
+    belongs_to :response, :dependent => :destroy
     accepts_nested_attributes_for :response
     validates_inclusion_of :url_type, in: %w(url regex)
+    validates_presence_of :application_id
     def initialize(attrs = {})
       attrs[:http_method] = attrs.delete(:method) if attrs.key?(:method)
       super

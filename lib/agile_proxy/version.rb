@@ -2,5 +2,5 @@
 #
 # The Agile Proxy module is a common namespace for all classes / sub modules.
 module AgileProxy
-  VERSION = '0.1.9'
+  VERSION = '0.1.10'
 end

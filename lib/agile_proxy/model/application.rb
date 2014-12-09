@@ -13,8 +13,8 @@ module AgileProxy
   #
   class Application < ActiveRecord::Base
     belongs_to :user
-    has_many :request_specs
-    has_many :recordings
+    has_many :request_specs, :dependent => :destroy
+    has_many :recordings, :dependent => :delete_all
     validates_uniqueness_of :password, scope: :username
   end
 end

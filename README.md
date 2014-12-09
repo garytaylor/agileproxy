@@ -103,3 +103,4 @@ http://public-app-1:password@localhost:3100
 ## History
 v0.1.8 Added support for plain text params parser - As DWR uses this (and maybe others)
 v0.1.9 Plain text params parser bug fixed - now handles params with a key and no value
+v0.1.10 Now using dependent: :destroy to tidy up better when all specs for an application are deleted (common occurence)

@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    agile-proxy (0.1.9)
+    agile-proxy (0.1.10)
       activerecord (~> 4.1.6)
       em-http-request (~> 1.1.2)
       em-synchrony (~> 1.0.3)
