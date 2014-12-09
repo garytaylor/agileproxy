@@ -26,7 +26,7 @@ module AgileProxy
       username, password = username_password env
       @route_set = ActionDispatch::Routing::RouteSet.new
 
-      my_short_list = short_list(username, password, request.request_method, request.url).all.to_a
+      my_short_list = short_list(username, password, request.request_method, request.url).all.to_a.reverse
       headers = downcased_headers(env)
       body = request.body.read
       request.body.rewind

@@ -34,20 +34,21 @@ module AgileProxy
             configure_applications
             # Now, add some stubs via the REST interface
             [@http_url, @https_url].each do |url|
+              create_request_spec url: "#{url}/index.html", response: { content_type: 'text/html', content: '<html><body>This Is An Older Mock</body></html>' } #This is intentional - the system should always use the latest
               create_request_spec url: "#{url}/index.html", response: { content_type: 'text/html', content: '<html><body>Mocked Content</body></html>' }
               create_request_spec url: "#{url}/api/forums", response: { content_type: 'application/json', content: JSON.pretty_generate(forums: [], total: 0) }
               create_request_spec url: "#{url}/api/forums", http_method: 'POST', response: { content_type: 'application/json', content: '{"created": true}' }
-              create_request_spec url: "#{url}/api/forums/:forum_id/posts", response: { content_type: 'application/json', content: JSON.pretty_generate(posts: [
-                { forum_id: '{{forum_id}}', subject: 'My first post' },
-                { forum_id: '{{forum_id}}', subject: 'My second post' },
-                { forum_id: '{{forum_id}}', subject: 'My third post' }
-              ], total: 3), is_template: true }
               create_request_spec url: "#{url}/api/forums/:forum_id/:post_id", response: { content_type: 'text/html', content: '<html><body><h1>Sorted By: {{sort}}</h1><h2>{{forum_id}}</h2><h3>{{post_id}}</h3></body></html>', is_template: true }
               create_request_spec url: "#{url}/api/forums/:forum_id/:post_id", http_method: 'PUT', response: { content_type: 'application/json', content: '{"updated": true}' }
               create_request_spec url: "#{url}/api/forums/:forum_id/:post_id", http_method: 'DELETE', response: { content_type: 'application/json', content: '{"deleted": true}' }
               create_request_spec url: "#{url}/api/forums/:forum_id/:post_id", conditions: '{"post_id": "special"}', response: { content_type: 'text/html', content: '<html><body><h1>Sorted By: {{sort}}</h1><h2>{{forum_id}}</h2><h3>{{post_id}}</h3><p>This is a special response</p></body></html>', is_template: true }
               create_request_spec url: "#{url}/api/forums/:forum_id/:post_id", conditions: '{"post_id": "special", "sort": "eversospecial"}', response: { content_type: 'text/html', content: '<html><body><h1>Sorted By: {{sort}}</h1><h2>{{forum_id}}</h2><h3>{{post_id}}</h3><p>This is an ever so special response</p></body></html>', is_template: true }
               create_request_spec url: "#{url}/api/forums/:forum_id", http_method: 'POST', conditions: '{"posted_var":"special_value"}', response: { content_type: 'text/html', content: '<html><body><h1></h1><h2>{{posted_var}}</h2><h3>{{forum_id}}</h3><p>This should get data from the POSTed data</p></body></html>', is_template: true }
+              create_request_spec url: "#{url}/api/forums/:forum_id/posts", response: { content_type: 'application/json', content: JSON.pretty_generate(posts: [
+                   { forum_id: '{{forum_id}}', subject: 'My first post' },
+                   { forum_id: '{{forum_id}}', subject: 'My second post' },
+                   { forum_id: '{{forum_id}}', subject: 'My third post' }
+               ], total: 3), is_template: true }
             end
           end
           before :each do
