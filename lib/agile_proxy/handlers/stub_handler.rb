@@ -89,7 +89,11 @@ module AgileProxy
 
     def plain_text_handler
       proc do |raw_post|
-        data_as_array = raw_post.split("\n").map {|line| line.split('=')}.flatten
+        data_as_array = raw_post.split("\n").map do |line|
+          arr = line.split('=')
+          arr << nil if arr.length == 1
+          arr
+        end.flatten
         data = Hash[*data_as_array]
         ActionDispatch::Request::Utils.deep_munge(data).with_indifferent_access
       end
