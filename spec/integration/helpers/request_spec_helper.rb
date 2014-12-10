@@ -1,10 +1,11 @@
+require 'rest_client'
 module AgileProxy
   module Test
     module Integration
       # A helper for 'request spec' integration tests
       module RequestSpecHelper
         def load_small_set_of_request_specs(options = {})
-          let(:recordings_resource) { RestClient::Resource.new "http://localhost:3020/api/v1/users/1/applications/#{@recording_application_id}/recordings", headers: { content_type: 'application/json' } }
+          let(:recordings_resource) { RestClient::Resource.new "http://localhost:#{api_port}/api/v1/users/1/applications/#{@recording_application_id}/recordings", headers: { content_type: 'application/json' } }
           before :context do
 
             def configure_applications
@@ -14,7 +15,7 @@ module AgileProxy
             end
 
             def application_resource
-              @__application_resource ||= RestClient::Resource.new 'http://localhost:3020/api/v1/users/1/applications', headers: { content_type: 'application/json' }
+              @__application_resource ||= RestClient::Resource.new "http://localhost:#{api_port}/api/v1/users/1/applications", headers: { content_type: 'application/json' }
             end
 
             def create_request_spec(attrs)
@@ -23,11 +24,11 @@ module AgileProxy
             end
 
             def non_recording_resource
-              @__non_recording_resource ||= RestClient::Resource.new "http://localhost:3020/api/v1/users/1/applications/#{@non_recording_application_id}/request_specs", headers: { content_type: 'application/json' }
+              @__non_recording_resource ||= RestClient::Resource.new "http://localhost:#{api_port}/api/v1/users/1/applications/#{@non_recording_application_id}/request_specs", headers: { content_type: 'application/json' }
             end
 
             def recording_resource
-              @__recording_resource ||= RestClient::Resource.new "http://localhost:3020/api/v1/users/1/applications/#{@recording_application_id}/request_specs", headers: { content_type: 'application/json' }
+              @__recording_resource ||= RestClient::Resource.new "http://localhost:#{api_port}/api/v1/users/1/applications/#{@recording_application_id}/request_specs", headers: { content_type: 'application/json' }
             end
 
             # Delete all first

@@ -6,3 +6,4 @@ rvm:
 script:
   - bundle exec rake db:migrate ENV=test
   - bundle exec rspec spec/unit
+  - bundle exec rspec spec/integration

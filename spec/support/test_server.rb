@@ -1,6 +1,7 @@
 require 'eventmachine'
 require 'thin'
 require 'faraday'
+require 'agile_proxy/cli'
 
 module Thin
   module Backends
@@ -17,6 +18,12 @@ module AgileProxy
   module TestServer
     def initialize
       Thin::Logging.silent = true
+    end
+    def proxy_port
+      3101
+    end
+    def api_port
+      3021
     end
 
     def start_test_servers
@@ -40,6 +47,13 @@ module AgileProxy
       @http_url  = "http://localhost:#{q.pop}"
       @https_url = "https://localhost:#{q.pop}"
       @error_url = "http://localhost:#{q.pop}"
+    end
+
+    def start_proxy_server
+      Thread.new do
+        cli = Cli.start(['start', proxy_port.to_s, api_port.to_s, '--env', 'test'])
+      end
+      sleep 1
     end
 
     def echo_app_setup(response_code = 200)

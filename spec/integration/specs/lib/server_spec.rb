@@ -339,7 +339,7 @@ shared_examples_for 'a cache' do
     end.to_not change { r.body }
   end
 end
-describe AgileProxy::Server do
+describe AgileProxy::Server, :type => :integration do
   extend AgileProxy::Test::Integration::RequestSpecHelper
   describe 'Without recording' do
     load_small_set_of_request_specs
@@ -347,7 +347,7 @@ describe AgileProxy::Server do
       # Adding non-valid Faraday options throw an error: https://github.com/arsduo/koala/pull/311
       # Valid options: :request, :proxy, :ssl, :builder, :url, :parallel_manager, :params, :headers, :builder_class
       faraday_options = {
-        proxy: { uri: 'http://anonymous:password@localhost:3100' },
+        proxy: { uri: "http://anonymous:password@localhost:#{proxy_port}" },
         request: { timeout: 10.0 }
       }
       @http       = Faraday.new @http_url,  faraday_options
@@ -385,7 +385,7 @@ describe AgileProxy::Server do
       # Adding non-valid Faraday options throw an error: https://github.com/arsduo/koala/pull/311
       # Valid options: :request, :proxy, :ssl, :builder, :url, :parallel_manager, :params, :headers, :builder_class
       faraday_options = {
-        proxy: { uri: 'http://recording:password@localhost:3100' },
+        proxy: { uri: 'http://recording:password@localhost:3101' },
         request: { timeout: 10.0 }
       }
 
