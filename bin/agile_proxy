@@ -31,7 +31,7 @@ module AgileProxy
       end
 
       def environment
-        ENV['AGILE_PROXY_ENV'] || Dir.pwd == File.expand_path('..', File.dirname(__FILE__)) ? 'development' : 'production'
+        ENV['AGILE_PROXY_ENV'] || (Dir.pwd == File.expand_path('..', File.dirname(__FILE__)) ? 'development' : 'production')
       end
     end
     package_name 'Http Flexible Proxy'
