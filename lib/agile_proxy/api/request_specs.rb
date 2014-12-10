@@ -58,7 +58,7 @@ module AgileProxy
         delete do
           authenticate!
           scope = current_application.request_specs
-          scope.delete_all
+          scope.destroy_all
           { request_specs: [], total: 0 }
         end
         desc 'Create a new request specification'

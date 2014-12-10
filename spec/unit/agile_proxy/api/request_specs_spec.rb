@@ -144,7 +144,7 @@ describe AgileProxy::Api::RequestSpecs, api_test: true do
   end
   describe 'DELETE /users/1/applications/1/request_specs' do
     before :each do
-      expect(request_spec_assoc_class).to receive(:delete_all)
+      expect(request_spec_assoc_class).to receive(:destroy_all)
     end
     it 'Should delete all request specs for the users application' do
       delete '/v1/users/1/applications/1/request_specs'
