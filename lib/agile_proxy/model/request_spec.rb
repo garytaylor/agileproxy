@@ -29,7 +29,7 @@ module AgileProxy
     # This method returns a JSON decoded version of this as a HASH
     # @return [Hash] decoded conditions
     def conditions_json
-      ActiveSupport::JSON.decode(conditions)
+      ActiveSupport::JSON.decode(conditions).with_indifferent_access
     end
     # This method's output is a 'rack' response, but its input is not.
     # When the router has determined that this request spec is the one that is going to be sent to the client,

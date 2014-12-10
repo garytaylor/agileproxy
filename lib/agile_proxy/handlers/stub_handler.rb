@@ -47,6 +47,13 @@ module AgileProxy
     end
 
     def add_to_router(request, headers, body, route_set)
+      # This needs a bit of explaining as the router did not quite behave as expected.
+      # This proc calls route definition methods such as get, post etc.. with the path and handler
+      # the handler being an inline proc.
+      # But, we also pass a constraints handler
+      # After constraints are handled though, the 'action_dispatch.request.parameters' are deleted
+      # from the env, so our handler preserves them in agile_proxy.parameters.
+      # A bit weird, but it works reliably.
       proc do |spec|
         path = URI.parse(spec.url).path
         path = '/' if path == ''
@@ -55,10 +62,16 @@ module AgileProxy
         route_spec = {
           path => proc do |router_env|
             AgileProxy.log(:info, "agile-proxy: STUB #{method} for '#{request.url}'")
-            spec.call(router_env['action_dispatch.request.parameters'], headers, body)
+            spec.call(router_env['agile_proxy.parameters'], headers, body)
           end
         }
-        route_spec[:constraints] = ActiveSupport::JSON.decode(spec.conditions).symbolize_keys unless spec.conditions.empty?
+        route_spec[:constraints] = ->(request) {
+          ret_value = spec.conditions_json.all? do |k, v|
+            request.params.key?(k) && request.params[k] == v
+          end
+          request.env['agile_proxy.parameters'] = request.env['action_dispatch.request.parameters']
+          ret_value
+        }
         route_set.send method, route_spec
       end
     end
