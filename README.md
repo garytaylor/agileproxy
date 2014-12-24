@@ -107,3 +107,5 @@ v0.1.10 Now using dependent: :destroy to tidy up better when all specs for an ap
 v0.1.11 Further improved database tidy up.
         AGILE_PROXY_ENV can now set the environment at server startup
         conditions handling improved in routing
+v0.1.12 Added a 'Direct' server which is a simple HTTP server that response to the stubs - also allows
+        for static dirs to be hosted.
