@@ -383,19 +383,13 @@ describe AgileProxy::Server, :type => :integration do
           it_should_behave_like 'a request stub'
         end
       end
+      #Server mode only supports http - no real point for https at the moment
       context 'In Server Mode' do
         context 'HTTP' do
           let!(:url)  { @http_url_no_proxy }
           let!(:http) { @http_no_proxy }
           it_should_behave_like 'a request stub'
         end
-
-        context 'HTTPS' do
-          let!(:url)  { @https_url_no_proxy }
-          let!(:http) { @https_no_proxy }
-          it_should_behave_like 'a request stub'
-        end
-
       end
     end
   end
