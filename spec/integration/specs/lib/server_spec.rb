@@ -347,12 +347,17 @@ describe AgileProxy::Server, :type => :integration do
       # Adding non-valid Faraday options throw an error: https://github.com/arsduo/koala/pull/311
       # Valid options: :request, :proxy, :ssl, :builder, :url, :parallel_manager, :params, :headers, :builder_class
       faraday_options = {
-        proxy: { uri: "http://anonymous:password@localhost:#{proxy_port}" },
-        request: { timeout: 10.0 }
+          request: {timeout: 10.0}
       }
-      @http       = Faraday.new @http_url,  faraday_options
-      @https      = Faraday.new @https_url, faraday_options.merge(ssl: { verify: false })
-      @http_error = Faraday.new @error_url, faraday_options
+      faraday_options_with_proxy = faraday_options.merge({
+        proxy: { uri: "http://anonymous:password@localhost:#{proxy_port}" }
+      })
+      @http       = Faraday.new @http_url,  faraday_options_with_proxy
+      @https      = Faraday.new @https_url, faraday_options_with_proxy.merge(ssl: { verify: false })
+      @http_no_proxy       = Faraday.new @http_url_no_proxy,  faraday_options
+      @https_no_proxy      = Faraday.new @https_url_no_proxy, faraday_options.merge(ssl: { verify: false })
+      @http_error = Faraday.new @error_url, faraday_options_with_proxy
+      @http_error_no_proxy = Faraday.new @error_url, faraday_options_with_proxy
     end
     context 'proxying' do
       context 'HTTP' do
@@ -365,18 +370,33 @@ describe AgileProxy::Server, :type => :integration do
       end
     end
     context 'stubbing' do
-      context 'HTTP' do
-        let!(:url)  { @http_url }
-        let!(:http) { @http }
-        it_should_behave_like 'a request stub'
-      end
+      context 'In Proxy Mode' do
+        context 'HTTP' do
+          let!(:url)  { @http_url }
+          let!(:http) { @http }
+          it_should_behave_like 'a request stub'
+        end
 
-      context 'HTTPS' do
-        let!(:url)  { @https_url }
-        let!(:http) { @https }
-        it_should_behave_like 'a request stub'
+        context 'HTTPS' do
+          let!(:url)  { @https_url }
+          let!(:http) { @https }
+          it_should_behave_like 'a request stub'
+        end
       end
+      context 'In Server Mode' do
+        context 'HTTP' do
+          let!(:url)  { @http_url_no_proxy }
+          let!(:http) { @http_no_proxy }
+          it_should_behave_like 'a request stub'
+        end
 
+        context 'HTTPS' do
+          let!(:url)  { @https_url_no_proxy }
+          let!(:http) { @https_no_proxy }
+          it_should_behave_like 'a request stub'
+        end
+
+      end
     end
   end
   describe 'With recording' do

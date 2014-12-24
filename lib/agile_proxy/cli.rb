@@ -36,12 +36,13 @@ module AgileProxy
     package_name 'Http Flexible Proxy'
     desc 'start PROXY_PORT WEBSERVER_PORT', 'Runs the agile proxy'
     method_options data_dir: data_dir, database_config_file: 'db.yml', env: environment
-    def start(proxy_port = nil, webserver_port = nil)
+    def start(proxy_port = nil, server_port = nil, webserver_port = nil)
       ensure_database_config_file_exists database_config_file(options)
       puts "Data dir is #{options.data_dir}, environment is #{options.env}"
       setup_for_migrations(options)
       ::AgileProxy.configure do |config|
         config.proxy_port = proxy_port unless proxy_port.nil?
+        config.server_port = server_port unless server_port.nil?
         config.webserver_port = webserver_port unless webserver_port.nil?
         config.environment = options.env
         config.database_config_file = database_config_file(options)

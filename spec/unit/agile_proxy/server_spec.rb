@@ -12,6 +12,7 @@ describe AgileProxy::Server do
     end
   end
   let(:request_spec_server_class) { Class.new }
+  let(:request_spec_direct_server_class) { Class.new }
   let(:api_server_class) { Class.new }
   let(:em_class) { Class.new }
   let(:socket_class) { Class.new }
@@ -20,6 +21,7 @@ describe AgileProxy::Server do
     stub_const('::EM', em_class)
     stub_const('AgileProxy::Servers::Api', api_server_class)
     stub_const('AgileProxy::Servers::RequestSpec', request_spec_server_class)
+    stub_const('AgileProxy::Servers::RequestSpecDirect', request_spec_direct_server_class)
   end
   context 'Initialization' do
     context 'In test environment' do
@@ -64,6 +66,7 @@ describe AgileProxy::Server do
         inner_loop = blk
       end
       expect(request_spec_server_class).to receive(:start).and_return request_spec_server_class.new
+      expect(request_spec_direct_server_class).to receive(:start).and_return request_spec_direct_server_class.new
       subject.start
       inner_loop.call
     end

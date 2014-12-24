@@ -92,6 +92,7 @@ describe AgileProxy::StubHandler do
           it 'Should match with a post on the same domain but not with a get or a post on a different domain' do
             expect(handler.call(request_for(method: 'POST', url: 'http://example.com').env)).to eql([200, {}, ''])
             expect(handler.call(request_for(method: 'POST', url: 'http://example.com/').env)).to eql([200, {}, ''])
+            expect(handler.call(request_for(method: 'POST', url: 'http://example.com/', headers: {'Content-Type' => 'text/plain'}, body: "a=1\nb=2\nc=3").env)).to eql([200, {}, ''])
             expect(handler.call(request_for(url: 'http://example.com/').env)).to eql route_not_found_response
             expect(handler.call(request_for(method: 'POST', url: 'http://subdomain.example.com/').env)).to eql route_not_found_response
           end

@@ -8,6 +8,7 @@ require 'grape'
 require 'agile_proxy/api/root'
 require 'agile_proxy/servers/api'
 require 'agile_proxy/servers/request_spec'
+require 'agile_proxy/servers/request_spec_direct'
 require 'forwardable'
 module AgileProxy
   #
@@ -44,6 +45,12 @@ module AgileProxy
       "http://#{webserver_host}:#{webserver_port}"
     end
 
+    # The url that the direct web server can be accessed from
+    # @return [String] The URL
+    def server_url
+      "http://#{server_host}:#{server_port}"
+    end
+
     # The host that the proxy server is running on
     # @return [String] The host
     def host
@@ -68,6 +75,18 @@ module AgileProxy
       AgileProxy.config.webserver_port
     end
 
+    # The host that the direct server is running on
+    # @return [String] The host
+    def server_host
+      AgileProxy.config.server_host
+    end
+
+    # The port that the direct server is running on
+    # @return [String] The port
+    def server_port
+      AgileProxy.config.server_port
+    end
+
     protected
 
     def main_loop
@@ -77,8 +96,9 @@ module AgileProxy
           puts e.backtrace.join("\n")
         end
         AgileProxy::Servers::Api.start(webserver_host, webserver_port)
+        AgileProxy::Servers::RequestSpecDirect.start(server_host, server_port)
         @request_spec_server = AgileProxy::Servers::RequestSpec.start
-        AgileProxy.log(:info, "agile-proxy: Proxy listening on #{url} and webserver listening on #{webserver_url}")
+        AgileProxy.log(:info, "agile-proxy: Proxy listening on #{url}, API webserver listening on #{webserver_url} and Direct webserver listening on #{server_url}")
       end
     end
   end

@@ -12,6 +12,7 @@ module AgileProxy
               application_resource.delete  # Delete all applications
               @non_recording_application_id = JSON.parse(application_resource.post user_id: 1, name: 'Non recording app', username: 'anonymous', password: 'password')['id']
               @recording_application_id = JSON.parse(application_resource.post user_id: 1, name: 'Recording app', username: 'recording', password: 'password', record_requests: true)['id']
+              @direct_application_id = JSON.parse(application_resource.post user_id: 1, name: 'Direct app', username: nil, password: nil, record_requests: false)['id']
             end
 
             def application_resource
@@ -21,6 +22,7 @@ module AgileProxy
             def create_request_spec(attrs)
               non_recording_resource.post ActiveSupport::JSON.encode attrs
               recording_resource.post ActiveSupport::JSON.encode attrs
+              direct_resource.post ActiveSupport::JSON.encode attrs
             end
 
             def non_recording_resource
@@ -31,10 +33,14 @@ module AgileProxy
               @__recording_resource ||= RestClient::Resource.new "http://localhost:#{api_port}/api/v1/users/1/applications/#{@recording_application_id}/request_specs", headers: { content_type: 'application/json' }
             end
 
+            def direct_resource
+              @__direct_resource ||= RestClient::Resource.new "http://localhost:#{api_port}/api/v1/users/1/applications/#{@direct_application_id}/request_specs", headers: { content_type: 'application/json' }
+            end
+
             # Delete all first
             configure_applications
             # Now, add some stubs via the REST interface
-            [@http_url, @https_url].each do |url|
+            [@http_url, @https_url, @http_url_no_proxy, @https_url_no_proxy].each do |url|
               create_request_spec url: "#{url}/index.html", response: { content_type: 'text/html', content: '<html><body>This Is An Older Mock</body></html>' } #This is intentional - the system should always use the latest
               create_request_spec url: "#{url}/index.html", response: { content_type: 'text/html', content: '<html><body>Mocked Content</body></html>' }
               create_request_spec url: "#{url}/api/forums", response: { content_type: 'application/json', content: JSON.pretty_generate(forums: [], total: 0) }

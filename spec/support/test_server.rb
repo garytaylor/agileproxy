@@ -25,6 +25,9 @@ module AgileProxy
     def api_port
       3021
     end
+    def server_port
+      3022
+    end
 
     def start_test_servers
       q = Queue.new
@@ -47,11 +50,13 @@ module AgileProxy
       @http_url  = "http://localhost:#{q.pop}"
       @https_url = "https://localhost:#{q.pop}"
       @error_url = "http://localhost:#{q.pop}"
+      @http_url_no_proxy = "http://localhost:#{server_port}"
+      @https_url_no_proxy = "https://localhost:#{server_port}"
     end
 
     def start_proxy_server
       Thread.new do
-        cli = Cli.start(['start', proxy_port.to_s, api_port.to_s, '--env', 'test'])
+        cli = Cli.start(['start', proxy_port.to_s, server_port.to_s, api_port.to_s, '--env', 'test'])
       end
       sleep 1
     end

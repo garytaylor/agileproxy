@@ -77,7 +77,12 @@ module AgileProxy
     end
 
     def collection(username, password)
-      Application.where(username: username, password: password).first.request_specs
+      #An empty string and NULL are the same thing here.  The UI has no way of sending NULL when creating an application
+      if (username.nil? && password.nil?)
+        Application.where('(username = ? OR username IS NULL) AND (password = ? OR password IS NULL)', '', '').first.request_specs
+      else
+        Application.where(username: username, password: password).first.request_specs
+      end
     end
 
     def short_list(username, password, _method, url)
@@ -122,6 +127,8 @@ module AgileProxy
 
     def call(env)
       request = ActionDispatch::Request.new(env)
+      request.params  #Might seem odd, but action dispatch request is a bit naughty and adds the appropriate
+                      # bits to ENV during access to this getter when used for the first time
       env['action_dispatch.request.parameters'].merge!(
           env['action_dispatch.request.request_parameters']
       ) unless request.content_length.zero?
