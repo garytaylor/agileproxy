@@ -109,3 +109,4 @@ v0.1.11 Further improved database tidy up.
         conditions handling improved in routing
 v0.1.12 Added a 'Direct' server which is a simple HTTP server that response to the stubs - also allows
         for static dirs to be hosted.
+v0.1.13 Upgraded activerecord and other gems to later versions

@@ -75,8 +75,8 @@ shared_examples_for 'a request stub' do |options = {}|
   end
   it 'Should respond with an error for api/forums/:forum_id/:post_id.html with parameter substitution with a missing query parameter' do
     resp = http.get '/api/forums/my_forum/my_post.html'
-    expect(resp.body).to eql "Missing var or method 'sort' in data."
-    expect(resp.status).to eql 500
+    expect(resp.body).to eql '<html><body><h1>Sorted By: </h1><h2>my_forum</h2><h3>my_post</h3></body></html>'
+    expect(resp.status).to eql 200
   end
   it 'Should match the route by posted json data and the posted data can be output via the template' do
     resp = http.post '/api/forums/my_forum', '{"posted_var": "special_value"}', 'Content-Type' => 'application/json'

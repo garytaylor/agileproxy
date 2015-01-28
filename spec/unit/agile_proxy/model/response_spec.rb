@@ -30,7 +30,7 @@ describe AgileProxy::Response do
         expect(subject.to_rack({ name: 'World' }, {}, '')).to eql([200, { 'Content-Type' => 'text/plain' }, 'Hello World'])
       end
       it 'Should deal with if a parameter is missing' do
-        expect(subject.to_rack({}, {}, '')).to eql([500, { 'Content-Type' => 'text/plain' }, "Missing var or method 'name' in data."])
+        expect(subject.to_rack({}, {}, '')).to eql([200, { 'Content-Type' => 'text/plain' }, "Hello "])
       end
     end
   end

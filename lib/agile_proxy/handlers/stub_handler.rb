@@ -62,14 +62,13 @@ module AgileProxy
         route_spec = {
           path => proc do |router_env|
             AgileProxy.log(:info, "agile-proxy: STUB #{method} for '#{request.url}'")
-            spec.call(router_env['agile_proxy.parameters'], headers, body)
+            spec.call(HashWithIndifferentAccess.new(router_env['action_dispatch.request.path_parameters'].merge(router_env['action_dispatch.request.query_parameters']).merge(router_env['action_dispatch.request.request_parameters'])), headers, body)
           end
         }
         route_spec[:constraints] = ->(request) {
           ret_value = spec.conditions_json.all? do |k, v|
             request.params.key?(k) && request.params[k] == v
           end
-          request.env['agile_proxy.parameters'] = request.env['action_dispatch.request.parameters']
           ret_value
         }
         route_set.send method, route_spec
