@@ -49,7 +49,7 @@ module AgileProxy
       end
       resource :request_specs do
         desc 'List all request specifications for the application'
-        paginate per_page: 20, max_per_page: 200
+        paginate per_page: 50, max_per_page: 200
         get do
           authenticate!
           scope = current_application.request_specs
