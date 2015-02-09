@@ -16,7 +16,7 @@ end
 
 module AgileProxy
   module TestServer
-    def initialize
+    def initialize(rspecParams=nil)
       Thin::Logging.silent = true
     end
     def proxy_port

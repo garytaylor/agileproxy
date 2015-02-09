@@ -102,11 +102,20 @@ http://public-app-1:password@localhost:3100
 
 ## History
 v0.1.8 Added support for plain text params parser - As DWR uses this (and maybe others)
+
 v0.1.9 Plain text params parser bug fixed - now handles params with a key and no value
+
 v0.1.10 Now using dependent: :destroy to tidy up better when all specs for an application are deleted (common occurence)
+
 v0.1.11 Further improved database tidy up.
         AGILE_PROXY_ENV can now set the environment at server startup
         conditions handling improved in routing
+
 v0.1.12 Added a 'Direct' server which is a simple HTTP server that response to the stubs - also allows
         for static dirs to be hosted.
+
 v0.1.13 Upgraded activerecord and other gems to later versions
+
+v0.1.14 - Increased pagination size by default to 50 on stubs until I add the client side code
+v0.1.15 - 0.1.17 - No functionality change, these were just to try and please travis
+v0.1.18 - Fixed issue with integration test which was showing up now that travis is working again
