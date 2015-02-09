@@ -16,7 +16,7 @@ angular.module('AgileProxy').controller('StubsCtrl', function ($resource, $scope
         },
         deleteStub: function (stub) {
             DialogService.yesNo('Delete this stub ?').then(function (response) {
-                stub.$delete({id: stub.id});
+                stub.$destroy({id: stub.id});
             });
         },
         addStub: function () {
