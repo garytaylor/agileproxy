@@ -6,3 +6,4 @@ assets/ui/bower_components
 .yardoc
 db/*.db
 coverage/
+Gemfile.lock
