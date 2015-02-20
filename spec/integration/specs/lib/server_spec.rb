@@ -3,6 +3,7 @@ require 'integration_spec_helper'
 # require 'spec_helper'
 require 'agile_proxy'
 require 'resolv'
+require 'rest_client'
 
 shared_examples_for 'a proxy server' do |options = {}|
   if options.key?(:recording) && options[:recording]
@@ -32,15 +33,32 @@ shared_examples_for 'a proxy server' do |options = {}|
 end
 
 shared_examples_for 'a request stub' do |options = {}|
+  recording = false
   if options.key?(:recording) && options[:recording]
+    recording = true
     after :each do
       data = recordings_resource.get
       count = JSON.parse(data)['total']
       expect(count).to eql(1)
     end
   end
+  def find_stub(client, name)
+    @stubs_with_recordings.select { |stub| stub.url == client.url_prefix.to_s && stub.name == name}.first
+  end
+  def rest_client_for_stub(stub)
+    RestClient::Resource.new("http://localhost:#{api_port}/api/v1/users/1/applications/#{@recording_application_id}/request_specs/#{stub.body[:id]}/recordings", content_type: :json )
+  end
+  def recordings_for(name)
+    stub = find_stub(http, name)
+    JSON.parse(rest_client_for_stub(stub).get).with_indifferent_access
+  end
+  def recordings_matcher_for(name, path)
+    stub = find_stub(http, name)
+    {recordings: a_collection_containing_exactly(a_hash_including request_body: '', request_url: "#{http.url_prefix}#{path.gsub(/^\//, '')}", request_method: 'GET', request_spec_id: stub.body[:id])}
+  end
   it 'should stub GET requests' do
     expect(http.get('/index.html').body).to eql '<html><body>Mocked Content</body></html>'
+    expect(recordings_for 'index').to include(recordings_matcher_for('index', '/index.html')) if recording
   end
 
   it 'should stub GET response statuses' do
@@ -52,6 +70,7 @@ shared_examples_for 'a request stub' do |options = {}|
     expect(ActiveSupport::JSON.decode(resp.body).symbolize_keys).to eql forums: [], total: 0
     expect(resp.status).to eql 200
     expect(resp.headers['Content-Type']).to eql 'application/json'
+    expect(recordings_for 'api_forums').to include(recordings_matcher_for('api_forums', '/api/forums')) if recording
   end
 
   it 'Should get the mocked content with parameter substitution for the /api/forums/:forum_id/posts url' do

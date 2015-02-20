@@ -31,18 +31,28 @@ describe AgileProxy::StubHandler do
 
     describe '#handle_request' do
       it 'returns 404 if the request is not stubbed' do
-        stub = double('stub', http_method: 'GET', url: 'http://example.test:8080/index', conditions_json: {}, call: [404, {}, 'Not found'])
+        stub = double('stub', http_method: 'GET', url: 'http://example.test:8080/index', conditions_json: {}, call: [404, {}, 'Not found'], id: 5)
         expect(request_spec_class).to receive(:where).and_return double('association', all: [stub])
         expect(handler.call(to_rack_env(url: 'http://example.test:8080/index'))).to eql [404, {}, 'Not found']
       end
 
       it 'returns a response hash if the request is stubbed' do
-        stub = double('stub', http_method: 'GET', url: 'http://example.test:8080/index', conditions_json: {}, call: [200, { 'Content-Type' => 'application/json' }, 'Some content'])
+        stub = double('stub', http_method: 'GET', url: 'http://example.test:8080/index', conditions_json: {}, call: [200, { 'Content-Type' => 'application/json' }, 'Some content'], id: 5)
         expect(request_spec_class).to receive(:where).and_return double('association', all: [stub])
         expect(handler.call(request.env)).to eql([200, { 'Content-Type' => 'application/json' }, 'Some content'])
       end
       it 'Passes on the correct parameters to the stub call method' do
-        stub = double('stub', http_method: 'GET', url: 'http://example.test:8080/index', conditions_json: {})
+        stub = double('stub', http_method: 'GET', url: 'http://example.test:8080/index', conditions_json: {}, id: 5)
+        expect(request_spec_class).to receive(:where).and_return double('association', all: [stub])
+        body = request.body.read
+        request.body.rewind
+        expect(stub).to receive(:call).with({ some: 'param' }, { 'Accept-Encoding' => 'gzip', 'Cache-Control' => 'no-cache' }, body).and_return([200, { 'Content-Type' => 'application/json' }, 'Some Content'])
+        expect(handler.call(request.env)).to eql([200, { 'Content-Type' => 'application/json' }, 'Some Content'])
+        expect(request.env).to include('agile_proxy.request_spec_id' => stub.id)
+
+      end
+      it 'should store the id of the request spec in the rack environment when call is called' do
+        stub = double('stub', http_method: 'GET', url: 'http://example.test:8080/index', conditions_json: {}, id: 5)
         expect(request_spec_class).to receive(:where).and_return double('association', all: [stub])
         body = request.body.read
         request.body.rewind
@@ -52,7 +62,7 @@ describe AgileProxy::StubHandler do
       end
       describe 'Routing patterns' do
         describe 'With a simple GET match on the root of a domain' do
-          let(:request_stub) { double 'stub', url: 'http://example.com', http_method: 'GET', conditions_json: {} }
+          let(:request_stub) { double 'stub', url: 'http://example.com', http_method: 'GET', conditions_json: {}, id: 5 }
           before :each do
             allow(request_spec_class).to receive(:where).with('url LIKE ?', 'http://example.com%').and_return double('association', all: [request_stub])
             allow(request_spec_class).to receive(:where).with('url LIKE ?', 'http://subdomain.example.com%').and_return double('association', all: [])
@@ -67,7 +77,7 @@ describe AgileProxy::StubHandler do
 
         end
         describe 'With a simple GET match inside a domain' do
-          let(:request_stub) { double 'stub for simple get inside a domain', url: 'http://example.com/index', http_method: 'GET', conditions_json: {} }
+          let(:request_stub) { double 'stub for simple get inside a domain', url: 'http://example.com/index', http_method: 'GET', conditions_json: {}, id: 5 }
           before :each do
             allow(request_spec_class).to receive(:where).with('url LIKE ?', 'http://example.com%').and_return double('association', all: [request_stub])
             allow(request_spec_class).to receive(:where).with('url LIKE ?', 'http://subdomain.example.com%').and_return double('association', all: [])
@@ -83,7 +93,7 @@ describe AgileProxy::StubHandler do
 
         end
         describe 'With a simple POST match on the root of a domain' do
-          let(:request_stub) { double 'stub', url: 'http://example.com', http_method: 'POST', conditions_json: {} }
+          let(:request_stub) { double 'stub', url: 'http://example.com', http_method: 'POST', conditions_json: {}, id: 5 }
           before :each do
             allow(request_spec_class).to receive(:where).with('url LIKE ?', 'http://example.com%').and_return double('association', all: [request_stub])
             allow(request_spec_class).to receive(:where).with('url LIKE ?', 'http://subdomain.example.com%').and_return double('association', all: [])
@@ -99,7 +109,7 @@ describe AgileProxy::StubHandler do
 
         end
         describe 'With a more complex route with conditions inside a domain' do
-          let(:request_stub) { double 'stub for complex route inside a domain', url: 'http://example.com/users/:user_id/index', http_method: 'GET', conditions_json: { user_id: '1' } }
+          let(:request_stub) { double 'stub for complex route inside a domain', url: 'http://example.com/users/:user_id/index', http_method: 'GET', conditions_json: { user_id: '1' }, id: 5 }
           before :each do
             allow(request_spec_class).to receive(:where).with('url LIKE ?', 'http://example.com%').and_return double('association', all: [request_stub])
             expect(request_stub).to receive(:call).and_return([200, {}, ''])
@@ -113,7 +123,7 @@ describe AgileProxy::StubHandler do
           end
         end
         describe 'With a more complex route with conditions including query params inside a domain' do
-          let(:request_stub) { double 'stub for complex route inside a domain', url: 'http://example.com/users/:user_id/index', http_method: 'GET', conditions_json: { user_id: '1', extra_1: 'extra_1', extra_2: 'extra_2' } }
+          let(:request_stub) { double 'stub for complex route inside a domain', url: 'http://example.com/users/:user_id/index', http_method: 'GET', conditions_json: { user_id: '1', extra_1: 'extra_1', extra_2: 'extra_2' }, id: 5 }
           before :each do
             allow(request_spec_class).to receive(:where).with('url LIKE ?', 'http://example.com%').and_return double('association', all: [request_stub])
             allow(request_stub).to receive(:call).and_return([200, {}, ''])

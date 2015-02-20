@@ -79,6 +79,7 @@ module AgileProxy
           authenticate!
           record.tap(&:destroy).as_json(default_json_spec)
         end
+
       end
     end
   end

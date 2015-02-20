@@ -119,3 +119,6 @@ v0.1.13 Upgraded activerecord and other gems to later versions
 v0.1.14 - Increased pagination size by default to 50 on stubs until I add the client side code
 v0.1.15 - 0.1.17 - No functionality change, these were just to try and please travis
 v0.1.18 - Fixed issue with integration test which was showing up now that travis is working again
+v0.1.19 - Recordings now record the request spec id.
+            Recordings can now be accessed via /request_specs/:request_spec_id/recordings to provide recordings specific to the request spec
+

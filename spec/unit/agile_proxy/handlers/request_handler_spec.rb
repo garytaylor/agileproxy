@@ -8,7 +8,7 @@ describe AgileProxy::RequestHandler do
   end
 
   context 'with stubbed handlers' do
-    let(:env) { to_rack_env(url: 'http://dummy.host.com/index.html') }
+    let(:env) { to_rack_env(url: 'http://dummy.host.com/index.html').merge('agile_proxy.request_spec_id' => 8) }
     let(:stub_handler) { Class.new }
     let(:proxy_handler) { Class.new }
     let(:application_class) { Class.new }
@@ -41,9 +41,9 @@ describe AgileProxy::RequestHandler do
         expect(subject.call(env)).to eql [200, {}, 'Some data']
       end
 
-      it 'Calls application.recordings.create if record_requests is true' do
+      it 'Calls application.recordings.create with a reference to the stub if record_requests is true' do
         allow(application).to receive(:record_requests).and_return true
-        expect(application.recordings).to receive(:create)
+        expect(application.recordings).to receive(:create).with(a_hash_including request_spec_id: 8)
         expect_any_instance_of(stub_handler).to receive(:call).with(env).and_return [200, {}, 'Some data']
         expect_any_instance_of(proxy_handler).to_not receive(:call)
         expect(subject.call(env)).to eql [200, {}, 'Some data']

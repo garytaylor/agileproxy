@@ -1,4 +1,5 @@
 require_relative 'request_specs'
+require_relative 'request_spec_recordings'
 require_relative 'applications'
 require_relative 'recordings'
 module AgileProxy
@@ -34,6 +35,9 @@ module AgileProxy
         namespace '/applications/:application_id' do
           mount Api::Recordings
           mount Api::RequestSpecs
+          namespace '/request_specs/:request_spec_id' do
+            mount Api::RequestSpecRecordings
+          end
         end
       end
     end

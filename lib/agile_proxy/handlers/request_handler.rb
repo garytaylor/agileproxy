@@ -42,7 +42,8 @@ module AgileProxy
                                       request_method: request.request_method,
                                       response_headers: rack_response[1],
                                       response_body: rack_response[2],
-                                      response_status: rack_response[0]
+                                      response_status: rack_response[0],
+                                      request_spec_id: env['agile_proxy.request_spec_id']
       end
       rack_response
     end

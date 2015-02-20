@@ -40,14 +40,8 @@ module AgileProxy
       output_status_code = status_code
       if is_template
         data = OpenStruct.new input_params
-        begin
-          template = Tilt['handlebars'].new { output_content }
-          output_content = template.render data
-        rescue ::FlavourSaver::UnknownHelperException => ex
-          method = ex.message.match(/Template context doesn't respond to method "(.*)"/)[1]
-          output_content = "Missing var or method '#{method}' in data."
-          output_status_code = 500
-        end
+        template = Tilt['handlebars'].new { output_content }
+        output_content = template.render data
       end
       EventMachine::Synchrony.sleep(delay) if delay > 0
       [output_status_code, output_headers, output_content]
