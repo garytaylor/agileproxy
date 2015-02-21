@@ -48,7 +48,6 @@ describe AgileProxy::StubHandler do
         request.body.rewind
         expect(stub).to receive(:call).with({ some: 'param' }, { 'Accept-Encoding' => 'gzip', 'Cache-Control' => 'no-cache' }, body).and_return([200, { 'Content-Type' => 'application/json' }, 'Some Content'])
         expect(handler.call(request.env)).to eql([200, { 'Content-Type' => 'application/json' }, 'Some Content'])
-        expect(request.env).to include('agile_proxy.request_spec_id' => stub.id)
 
       end
       it 'should store the id of the request spec in the rack environment when call is called' do
@@ -58,6 +57,7 @@ describe AgileProxy::StubHandler do
         request.body.rewind
         expect(stub).to receive(:call).with({ some: 'param' }, { 'Accept-Encoding' => 'gzip', 'Cache-Control' => 'no-cache' }, body).and_return([200, { 'Content-Type' => 'application/json' }, 'Some Content'])
         expect(handler.call(request.env)).to eql([200, { 'Content-Type' => 'application/json' }, 'Some Content'])
+        expect(request.env).to include('agile_proxy.request_spec' => stub)
 
       end
       describe 'Routing patterns' do

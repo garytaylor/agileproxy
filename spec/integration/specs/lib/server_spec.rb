@@ -65,6 +65,14 @@ shared_examples_for 'a request stub' do |options = {}|
     expect(http.get('/index.html').status).to eql 200
   end
 
+  #TODO When time allows, work out how to easily test this as the stubs are not recorded for anything but recorded tests
+  #the lookup table would need to contain all stubs and we would need a way of indexing them to allow the test to find
+  # the correct one.
+  xit 'Should record a stub if specified in the stub irrespective of whether app is recording or not' do
+    expect(http.get('/indexRecording.html').status).to eql 200
+    expect(recordings_for('index_recording')).to include(recordings_matcher_for('index_recording', '/indexRecording.html'))
+  end
+
   it 'Should stub a different get request with json response' do
     resp = http.get('/api/forums')
     expect(ActiveSupport::JSON.decode(resp.body).symbolize_keys).to eql forums: [], total: 0

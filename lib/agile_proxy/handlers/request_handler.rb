@@ -35,7 +35,8 @@ module AgileProxy
           "Connection to #{request.url}#{body} not stubbed and new http connections are disabled"
         ]
       end
-      if application.record_requests
+      request_spec = env['agile_proxy.request_spec']
+      if application.record_requests || (request_spec && request_spec.record_requests)
         application.recordings.create request_headers: request.headers,
                                       request_body: body,
                                       request_url: request.url,
@@ -43,7 +44,7 @@ module AgileProxy
                                       response_headers: rack_response[1],
                                       response_body: rack_response[2],
                                       response_status: rack_response[0],
-                                      request_spec_id: env['agile_proxy.request_spec_id']
+                                      request_spec_id: request_spec ? request_spec.id : nil
       end
       rack_response
     end

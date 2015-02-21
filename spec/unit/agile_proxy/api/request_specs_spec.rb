@@ -119,7 +119,7 @@ describe AgileProxy::Api::RequestSpecs, api_test: true do
   end
   describe 'POST /users/1/applications/1/request_specs' do
     let(:request_spec_instance) { request_spec_assoc_class.new }
-    let(:persisted_attributes) { { user_id: 1, application_id: 1, url: 'http://www.test.com', http_method: 'GET' } }
+    let(:persisted_attributes) { { user_id: 1, application_id: 1, url: 'http://www.test.com', http_method: 'GET', record_requests: true } }
     before :each do
       expect(request_spec_instance).to receive(:as_json).with(default_json_spec).and_return(persisted_attributes)
       expect(current_user).to receive(:id).and_return(1)

@@ -22,7 +22,7 @@ module AgileProxy
           @permitted_params ||= declared(
               params,
               { include_missing: false },
-              [:spec, :note, :response, :http_method, :url, :url_type, :conditions]
+              [:spec, :note, :response, :http_method, :url, :url_type, :conditions, :record_requests]
           )
         end
 

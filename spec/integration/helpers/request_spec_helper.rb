@@ -57,6 +57,7 @@ module AgileProxy
             [@http_url, @https_url, @http_url_no_proxy, @https_url_no_proxy].each do |url|
               @stubs_with_recordings.push Spec.for url, 'index_old', create_request_spec(url: "#{url}/index.html", response: { content_type: 'text/html', content: '<html><body>This Is An Older Mock</body></html>' }) #This is intentional - the system should always use the latest
               @stubs_with_recordings.push Spec.for url, 'index', create_request_spec(url: "#{url}/index.html", response: { content_type: 'text/html', content: '<html><body>Mocked Content</body></html>' })
+              @stubs_with_recordings.push Spec.for url, 'index_recording', create_request_spec(url: "#{url}/indexRecording.html", response: { content_type: 'text/html', content: '<html><body>Mocked Content</body></html>' })
               @stubs_with_recordings.push Spec.for url, 'api_forums', create_request_spec(url: "#{url}/api/forums", response: { content_type: 'application/json', content: JSON.pretty_generate(forums: [], total: 0) })
               @stubs_with_recordings.push Spec.for url, 'api_forums_post', create_request_spec(url: "#{url}/api/forums", http_method: 'POST', response: { content_type: 'application/json', content: '{"created": true}' })
               @stubs_with_recordings.push Spec.for url, 'api_forum_post', create_request_spec(url: "#{url}/api/forums/:forum_id/:post_id", response: { content_type: 'text/html', content: '<html><body><h1>Sorted By: {{sort}}</h1><h2>{{forum_id}}</h2><h3>{{post_id}}</h3></body></html>', is_template: true })

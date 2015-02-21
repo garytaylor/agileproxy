@@ -121,4 +121,5 @@ v0.1.15 - 0.1.17 - No functionality change, these were just to try and please tr
 v0.1.18 - Fixed issue with integration test which was showing up now that travis is working again
 v0.1.19 - Recordings now record the request spec id.
             Recordings can now be accessed via /request_specs/:request_spec_id/recordings to provide recordings specific to the request spec
+v0.1.20 - An individual request spec can now be set to 'record_requests' rather than requiring the whole application to be in record mode which slows down every request
 

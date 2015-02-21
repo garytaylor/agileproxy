@@ -62,7 +62,7 @@ module AgileProxy
         route_spec = {
           path => proc do |router_env|
             AgileProxy.log(:info, "agile-proxy: STUB #{method} for '#{request.url}'")
-            router_env['agile_proxy.request_spec_id'] = spec.id
+            router_env['agile_proxy.request_spec'] = spec
             spec.call(HashWithIndifferentAccess.new(router_env['action_dispatch.request.path_parameters'].merge(router_env['action_dispatch.request.query_parameters']).merge(router_env['action_dispatch.request.request_parameters'])), headers, body)
           end
         }
