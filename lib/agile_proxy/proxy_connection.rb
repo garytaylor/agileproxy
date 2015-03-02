@@ -1,24 +1,27 @@
 require 'uri'
 require 'eventmachine'
-require 'http/parser'
-require 'em-http'
-require 'evma_httpserver'
-require 'em-synchrony'
 require 'stringio'
 require 'rack'
+require 'goliath/request'
+require 'goliath/env'
 
 module AgileProxy
   #
   # = The Proxy Connection
   #
   # This class is the event machine connection used by the proxy.  Every request creates a new instance of this
-  class ProxyConnection < EventMachine::Connection
-    attr_accessor :handler
+  class ProxyConnection < Goliath::Connection
+    def logger
+      ::AgileProxy.config.logger
+    end
     def post_init
-      @parser = Http::Parser.new(self)
+      super
+      #@proxy_parser = Http::Parser.new(self)
+      @proxy_parser = Http::Parser.new
     end
 
     def receive_data(data)
+      #@proxy_parser << data
       @parser << data
     end
 
@@ -36,24 +39,25 @@ module AgileProxy
     end
 
     def on_message_complete
-      if @parser.http_method == 'CONNECT'
-        restart_with_ssl(@parser.request_url)
+      if @proxy_parser.http_method == 'CONNECT'
+        restart_with_ssl(@proxy_parser.request_url)
       else
         if @ssl
-          uri = URI.parse(@parser.request_url)
+          uri = URI.parse(@proxy_parser.request_url)
           @url = "https://#{@ssl}#{[uri.path, uri.query].compact.join('?')}"
         else
-          @url = @parser.request_url
+          @url = @proxy_parser.request_url
         end
         handle_request
       end
     end
 
+
     protected
 
     def restart_with_ssl(url)
       @ssl = url
-      @parser = Http::Parser.new(self)
+      @proxy_parser = Http::Parser.new(self)
       @original_headers = @headers.clone
       send_data("HTTP/1.0 200 Connection established\r\nProxy-agent: Http-Flexible-Proxy/0.0.0\r\n\r\n")
       start_tls(
@@ -64,11 +68,9 @@ module AgileProxy
 
     def handle_request
       EM.synchrony do
-        request = ActionDispatch::Request.new(env)
-        request.params  # This will populate action_dispatch.request.parameters
-        handler.call(env).tap do |response|
-          send_response(response)
-        end
+        request = ::Goliath::Request.new(handler, self, env)
+        request.set_deferred_status :succeeded
+        request.process
       end
     end
 
@@ -79,10 +81,11 @@ module AgileProxy
       fake_input_buffer = StringIO.new(@body)
       fake_error_buffer = StringIO.new
       url_parsed = URI.parse(@url)
-      @__env = {
+      @__env = ::Goliath::Env.new
+      @__env.merge!({
         'rack.input' => Rack::Lint::InputWrapper.new(fake_input_buffer),
         'rack.errors' => Rack::Lint::ErrorWrapper.new(fake_error_buffer),
-        'REQUEST_METHOD' => @parser.http_method,
+        'REQUEST_METHOD' => @proxy_parser.http_method,
         'REQUEST_PATH' => url_parsed.path,
         'PATH_INFO' => url_parsed.path,
         'QUERY_STRING' => url_parsed.query || '',
@@ -90,9 +93,11 @@ module AgileProxy
         'rack.url_scheme' => url_parsed.scheme,
         'CONTENT_LENGTH' => @body.length,
         'SERVER_NAME' => url_parsed.host,
-        'SERVER_PORT' => url_parsed.port
+        'SERVER_PORT' => url_parsed.port,
+        'rack.logger' => logger
 
-      }
+
+                    })
       @headers.merge(@original_headers || {}).each do |name, value|
         converted_name = "HTTP_#{name.gsub(/-/, '_').upcase}"
         @__env[converted_name] = value
@@ -102,12 +107,6 @@ module AgileProxy
       @__env
     end
 
-    def send_response(response)
-      res = EM::DelegatedHttpResponse.new(self)
-      res.status = response[0]
-      res.headers = response[1]
-      res.content = response[2]
-      res.send_response
-    end
+
   end
 end

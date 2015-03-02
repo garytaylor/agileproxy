@@ -44,7 +44,7 @@ module AgileProxy
         output_content = template.render data
       end
       EventMachine::Synchrony.sleep(delay) if delay > 0
-      [output_status_code, output_headers, output_content]
+      [output_status_code, output_headers, [output_content]]
     end
   end
 end

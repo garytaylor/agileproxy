@@ -1,6 +1,7 @@
 require 'rack'
-require 'thin'
 require 'grape'
+require 'goliath/api'
+require 'goliath/runner'
 require 'agile_proxy/api/root'
 
 module AgileProxy
@@ -19,21 +20,19 @@ module AgileProxy
         # @param webserver_host [String] The host for the server to run on
         # @param webserver_port [Integer] The port for the server to run on
         def start(webserver_host, webserver_port)
-          # The sinatra web server
-          dispatch = Rack::Builder.app do
+          #
+          # The API runner
+          runner = ::Goliath::Runner.new([], nil)
+          runner.address = webserver_host
+          runner.port = webserver_port
+          runner.app = ::Goliath::Rack::Builder.app do
             use Rack::Static, root: File.join(ROOT, 'assets'), urls: ['/ui'], index: 'index.html'
             map '/api' do
               run ::AgileProxy::Api::Root.new
             end
           end
-          # Start the web server.
-          ::Rack::Server.start(
-              app: dispatch,
-              server: 'thin',
-              Host: webserver_host,
-              Port: webserver_port,
-              signals: false
-          )
+          runner.run
+
         end
       end
     end

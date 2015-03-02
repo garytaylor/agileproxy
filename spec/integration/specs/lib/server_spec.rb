@@ -56,13 +56,17 @@ shared_examples_for 'a request stub' do |options = {}|
     stub = find_stub(http, name)
     {recordings: a_collection_containing_exactly(a_hash_including request_body: '', request_url: "#{http.url_prefix}#{path.gsub(/^\//, '')}", request_method: 'GET', request_spec_id: stub.body[:id])}
   end
+
   it 'should stub GET requests' do
-    expect(http.get('/index.html').body).to eql '<html><body>Mocked Content</body></html>'
+    response = http.get('/index.html')
+    expect(response.body).to eql '<html><body>Mocked Content</body></html>'
+    expect(response.headers).to include('content-length' => "40")
     expect(recordings_for 'index').to include(recordings_matcher_for('index', '/index.html')) if recording
   end
 
   it 'should stub GET response statuses' do
-    expect(http.get('/index.html').status).to eql 200
+    response = http.get('/index.html')
+    expect(response.status).to eql 200
   end
 
   #TODO When time allows, work out how to easily test this as the stubs are not recorded for anything but recorded tests
@@ -77,7 +81,7 @@ shared_examples_for 'a request stub' do |options = {}|
     resp = http.get('/api/forums')
     expect(ActiveSupport::JSON.decode(resp.body).symbolize_keys).to eql forums: [], total: 0
     expect(resp.status).to eql 200
-    expect(resp.headers['Content-Type']).to eql 'application/json'
+    expect(resp.headers).to include('content-type' => 'application/json', 'content-length' => resp.body.length.to_s)
     expect(recordings_for 'api_forums').to include(recordings_matcher_for('api_forums', '/api/forums')) if recording
   end
 
@@ -85,43 +89,44 @@ shared_examples_for 'a request stub' do |options = {}|
     resp = http.get '/api/forums/my_forum/posts'
     expect(ActiveSupport::JSON.decode(resp.body)).to eql 'posts' => [{ 'forum_id' => 'my_forum', 'subject' => 'My first post' }, { 'forum_id' => 'my_forum', 'subject' => 'My second post' }, { 'forum_id' => 'my_forum', 'subject' => 'My third post' }], 'total' => 3
     expect(resp.status).to eql 200
-    expect(resp.headers['Content-Type']).to eql 'application/json'
+    expect(resp.headers).to include('content-type' => 'application/json', 'content-length' => resp.body.length.to_s)
   end
 
   it 'Should get the mocked content for api/forums/:forum_id/:post_id with parameter substitution including query parameters' do
     resp = http.get '/api/forums/my_forum/my_post?sort=id'
     expect(resp.body).to eql '<html><body><h1>Sorted By: id</h1><h2>my_forum</h2><h3>my_post</h3></body></html>'
     expect(resp.status).to eql 200
-    expect(resp.headers['Content-Type']).to eql 'text/html'
+    expect(resp.headers).to include('content-type' => 'text/html', 'content-length' => resp.body.length.to_s)
   end
   it 'Should get the mocked content for api/forums/:forum_id/:post_id.html with parameter substitution including query parameters' do
     resp = http.get '/api/forums/my_forum/my_post.html?sort=id'
     expect(resp.body).to eql '<html><body><h1>Sorted By: id</h1><h2>my_forum</h2><h3>my_post</h3></body></html>'
     expect(resp.status).to eql 200
-    expect(resp.headers['Content-Type']).to eql 'text/html'
+    expect(resp.headers).to include('content-type' => 'text/html', 'content-length' => resp.body.length.to_s)
   end
   it 'Should respond with an error for api/forums/:forum_id/:post_id.html with parameter substitution with a missing query parameter' do
     resp = http.get '/api/forums/my_forum/my_post.html'
     expect(resp.body).to eql '<html><body><h1>Sorted By: </h1><h2>my_forum</h2><h3>my_post</h3></body></html>'
+    expect(resp.headers).to include('content-type' => 'text/html', 'content-length' => resp.body.length.to_s)
     expect(resp.status).to eql 200
   end
   it 'Should match the route by posted json data and the posted data can be output via the template' do
     resp = http.post '/api/forums/my_forum', '{"posted_var": "special_value"}', 'Content-Type' => 'application/json'
     expect(resp.body).to eql '<html><body><h1></h1><h2>special_value</h2><h3>my_forum</h3><p>This should get data from the POSTed data</p></body></html>'
     expect(resp.status).to eql 200
-    expect(resp.headers['Content-Type']).to eql 'text/html'
+    expect(resp.headers).to include('content-type' => 'text/html', 'content-length' => resp.body.length.to_s)
   end
   it 'Should match the route by posted plain text data and the posted data can be output via the template' do
     resp = http.post '/api/forums/my_forum', "posted_var=special_value\n", 'Content-Type' => 'text/plain'
     expect(resp.body).to eql '<html><body><h1></h1><h2>special_value</h2><h3>my_forum</h3><p>This should get data from the POSTed data</p></body></html>'
     expect(resp.status).to eql 200
-    expect(resp.headers['Content-Type']).to eql 'text/html'
+    expect(resp.headers).to include('content-type' => 'text/html', 'content-length' => resp.body.length.to_s)
   end
   it 'Should match the route by posted plain text data and the posted data can be output via the template' do
     resp = http.post '/api/forums/my_forum', "dummy=\nposted_var=special_value\n", 'Content-Type' => 'text/plain'
     expect(resp.body).to eql '<html><body><h1></h1><h2>special_value</h2><h3>my_forum</h3><p>This should get data from the POSTed data</p></body></html>'
     expect(resp.status).to eql 200
-    expect(resp.headers['Content-Type']).to eql 'text/html'
+    expect(resp.headers).to include('content-type' => 'text/html', 'content-length' => resp.body.length.to_s)
   end
   # it 'Should match the route by posted xml data and the posted data can be output via the template' do
   #   resp = http.post "/api/forums/my_forum", '<posted_var>special_value</posted_var>', {'Content-Type' => 'application/xml'}
@@ -131,31 +136,33 @@ shared_examples_for 'a request stub' do |options = {}|
   it 'Should match the route by posted url encoded data and the posted data can be output via the template' do
     resp = http.post '/api/forums/my_forum', 'posted_var=special_value', 'Content-Type' => 'application/x-www-form-urlencoded'
     expect(resp.body).to eql '<html><body><h1></h1><h2>special_value</h2><h3>my_forum</h3><p>This should get data from the POSTed data</p></body></html>'
+    expect(resp.headers).to include('content-type' => 'text/html', 'content-length' => resp.body.length.to_s)
     expect(resp.status).to eql 200
   end
   it 'Should match the route by posted multipart encoded data and the posted data can be output via the template' do
     resp = http.post '/api/forums/my_forum', 'posted_var=special_value', 'Content-Type' => 'multipart/form-data'
     expect(resp.body).to eql '<html><body><h1></h1><h2>special_value</h2><h3>my_forum</h3><p>This should get data from the POSTed data</p></body></html>'
+    expect(resp.headers).to include('content-type' => 'text/html', 'content-length' => resp.body.length.to_s)
     expect(resp.status).to eql 200
   end
 
   it 'should stub POST requests' do
     resp = http.post('/api/forums', foo: :bar)
     expect(resp.body).to eql '{"created": true}'
-    expect(resp.headers['Content-Type']).to eql 'application/json'
+    expect(resp.headers).to include('content-type' => 'application/json', 'content-length' => resp.body.length.to_s)
 
   end
 
   it 'should stub PUT requests' do
     resp = http.put('/api/forums/forum_1/my_post', foo: :bar)
     expect(resp.body).to eql '{"updated": true}'
-    expect(resp.headers['Content-Type']).to eql 'application/json'
+    expect(resp.headers).to include('content-type' => 'application/json', 'content-length' => resp.body.length.to_s)
   end
 
   it 'should stub DELETE requests' do
     resp = http.delete('/api/forums/forum_1/my_post')
     expect(resp.body).to eql '{"deleted": true}'
-    expect(resp.headers['Content-Type']).to eql 'application/json'
+    expect(resp.headers).to include('content-type' => 'application/json', 'content-length' => resp.body.length.to_s)
   end
 end
 

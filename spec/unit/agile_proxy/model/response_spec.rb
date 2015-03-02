@@ -15,7 +15,7 @@ describe AgileProxy::Response do
     end
     it 'Should respond with a delay using the Em::Synchrony.sleep method' do
       expect(EventMachine::Synchrony).to receive(:sleep).with(0.5)
-      expect(subject.to_rack({}, {}, '')).to eql([200, { 'Content-Type' => 'text/plain' }, 'Test'])
+      expect(subject.to_rack({}, {}, '')).to eql([200, { 'Content-Type' => 'text/plain' }, ['Test']])
     end
 
   end
@@ -27,10 +27,10 @@ describe AgileProxy::Response do
         subject.content_type = 'text/plain'
       end
       it 'Should pass the params to the template and the output should be correct' do
-        expect(subject.to_rack({ name: 'World' }, {}, '')).to eql([200, { 'Content-Type' => 'text/plain' }, 'Hello World'])
+        expect(subject.to_rack({ name: 'World' }, {}, '')).to eql([200, { 'Content-Type' => 'text/plain' }, ['Hello World']])
       end
       it 'Should deal with if a parameter is missing' do
-        expect(subject.to_rack({}, {}, '')).to eql([200, { 'Content-Type' => 'text/plain' }, "Hello "])
+        expect(subject.to_rack({}, {}, '')).to eql([200, { 'Content-Type' => 'text/plain' }, ["Hello "]])
       end
     end
   end

@@ -1,4 +1,5 @@
 require_relative 'application'
+require 'active_record'
 module AgileProxy
   #
   # = The recording model

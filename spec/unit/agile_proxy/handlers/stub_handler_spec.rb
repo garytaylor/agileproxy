@@ -1,6 +1,17 @@
 require 'spec_helper'
 
 describe AgileProxy::StubHandler do
+  #Mock the content length middleware as we are not testing if that works
+  let(:rack_content_length_class) do
+    Class.new do
+      def initialize(app)
+        @app = app
+      end
+      def call(env)
+        @app.call(env)
+      end
+    end
+  end
   let(:route_not_found_response) { [404, { 'X-Cascade' => 'pass' }, ['Not Found']] }
   let(:handler) { AgileProxy::StubHandler.new }
   let(:request) do
@@ -23,6 +34,7 @@ describe AgileProxy::StubHandler do
 
   before :each do
     stub_const('AgileProxy::Application', application_class)
+    stub_const('Rack::ContentLength', rack_content_length_class)
     allow(application_class).to receive(:where).and_return application_class
     allow(application_class).to receive(:first).and_return application
     allow(application).to receive(:request_specs).and_return request_spec_class
@@ -71,8 +83,8 @@ describe AgileProxy::StubHandler do
           it 'Should match with a get on the same domain but not with a post or a different domain' do
             expect(handler.call(request_for(url: 'http://example.com').env)).to eql([200, {}, ''])
             expect(handler.call(request_for(url: 'http://example.com/').env)).to eql([200, {}, ''])
-            expect(handler.call(request_for(url: 'http://example.com/', method: 'POST').env)).to eql route_not_found_response
-            expect(handler.call(request_for(url: 'http://subdomain.example.com/').env)).to eql route_not_found_response
+            expect(handler.call(request_for(url: 'http://example.com/', method: 'POST').env)).to contain_exactly *route_not_found_response
+            expect(handler.call(request_for(url: 'http://subdomain.example.com/').env)).to contain_exactly *route_not_found_response
           end
 
         end
@@ -85,10 +97,10 @@ describe AgileProxy::StubHandler do
           end
           it 'Should match with a get on the same domain but not with a post or a different domain' do
             expect(handler.call(request_for(url: 'http://example.com/index').env)).to eql([200, {}, ''])
-            expect(handler.call(request_for(method: 'POST', url: 'http://example.com/index').env)).to eql route_not_found_response
-            expect(handler.call(request_for(url: 'http://subdomain.example.com/index').env)).to eql route_not_found_response
-            expect(handler.call(request_for(url: 'http://example.com/').env)).to eql route_not_found_response
-            expect(handler.call(request_for(url: 'http://example.com').env)).to eql route_not_found_response
+            expect(handler.call(request_for(method: 'POST', url: 'http://example.com/index').env)).to contain_exactly *route_not_found_response
+            expect(handler.call(request_for(url: 'http://subdomain.example.com/index').env)).to contain_exactly *route_not_found_response
+            expect(handler.call(request_for(url: 'http://example.com/').env)).to contain_exactly *route_not_found_response
+            expect(handler.call(request_for(url: 'http://example.com').env)).to contain_exactly *route_not_found_response
           end
 
         end
@@ -103,8 +115,8 @@ describe AgileProxy::StubHandler do
             expect(handler.call(request_for(method: 'POST', url: 'http://example.com').env)).to eql([200, {}, ''])
             expect(handler.call(request_for(method: 'POST', url: 'http://example.com/').env)).to eql([200, {}, ''])
             expect(handler.call(request_for(method: 'POST', url: 'http://example.com/', headers: {'Content-Type' => 'text/plain'}, body: "a=1\nb=2\nc=3").env)).to eql([200, {}, ''])
-            expect(handler.call(request_for(url: 'http://example.com/').env)).to eql route_not_found_response
-            expect(handler.call(request_for(method: 'POST', url: 'http://subdomain.example.com/').env)).to eql route_not_found_response
+            expect(handler.call(request_for(url: 'http://example.com/').env)).to contain_exactly *route_not_found_response
+            expect(handler.call(request_for(method: 'POST', url: 'http://subdomain.example.com/').env)).to contain_exactly *route_not_found_response
           end
 
         end
@@ -116,10 +128,10 @@ describe AgileProxy::StubHandler do
           end
           it 'Should match with a get on the same domain but not with a post or a different domain' do
             expect(handler.call(request_for(url: 'http://example.com/users/1/index').env)).to eql([200, {}, ''])
-            expect(handler.call(request_for(url: 'http://example.com/users/2/index').env)).to eql route_not_found_response
-            expect(handler.call(request_for(method: 'POST', url: 'http://example.com/users/1/index').env)).to eql route_not_found_response
-            expect(handler.call(request_for(url: 'http://example.com/users/1/').env)).to eql route_not_found_response
-            expect(handler.call(request_for(url: 'http://example.com/users/1').env)).to eql route_not_found_response
+            expect(handler.call(request_for(url: 'http://example.com/users/2/index').env)).to contain_exactly *route_not_found_response
+            expect(handler.call(request_for(method: 'POST', url: 'http://example.com/users/1/index').env)).to contain_exactly *route_not_found_response
+            expect(handler.call(request_for(url: 'http://example.com/users/1/').env)).to contain_exactly *route_not_found_response
+            expect(handler.call(request_for(url: 'http://example.com/users/1').env)).to contain_exactly *route_not_found_response
           end
         end
         describe 'With a more complex route with conditions including query params inside a domain' do
@@ -131,10 +143,10 @@ describe AgileProxy::StubHandler do
           it 'Should match with a get on the same domain but not with a post or a different domain' do
             expect(handler.call(request_for(url: 'http://example.com/users/1/index?extra_1=extra_1&extra_2=extra_2').env)).to eql([200, {}, ''])
             expect(handler.call(request_for(url: 'http://example.com/users/1/index?some_other=2&extra_1=extra_1&extra_2=extra_2').env)).to eql([200, {}, ''])
-            expect(handler.call(request_for(url: 'http://example.com/users/2/index').env)).to eql route_not_found_response
-            expect(handler.call(request_for(method: 'POST', url: 'http://example.com/users/1/index').env)).to eql route_not_found_response
-            expect(handler.call(request_for(url: 'http://example.com/users/1/').env)).to eql route_not_found_response
-            expect(handler.call(request_for(url: 'http://example.com/users/1').env)).to eql route_not_found_response
+            expect(handler.call(request_for(url: 'http://example.com/users/2/index').env)).to contain_exactly *route_not_found_response
+            expect(handler.call(request_for(method: 'POST', url: 'http://example.com/users/1/index').env)).to contain_exactly *route_not_found_response
+            expect(handler.call(request_for(url: 'http://example.com/users/1/').env)).to contain_exactly *route_not_found_response
+            expect(handler.call(request_for(url: 'http://example.com/users/1').env)).to contain_exactly *route_not_found_response
           end
         end
 
