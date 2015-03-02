@@ -36,8 +36,9 @@ module AgileProxy
         ]
       end
       request_spec = env['agile_proxy.request_spec']
+      exclude_headers = ['@env', 'rack.errors', 'rack.logger']
       if application.record_requests || (request_spec && request_spec.record_requests)
-        application.recordings.create request_headers: request.headers,
+        application.recordings.create request_headers: request.headers.reject {|key, value| exclude_headers.include?(key)},
                                       request_body: body,
                                       request_url: request.url,
                                       request_method: request.request_method,

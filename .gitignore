@@ -7,3 +7,4 @@ assets/ui/bower_components
 db/*.db
 coverage/
 Gemfile.lock
+vendor/gems

@@ -21,11 +21,9 @@ Gem::Specification.new do |gem|
   gem.add_development_dependency 'faraday', '~> 0.9', '>= 0.9.0'
   gem.add_development_dependency 'poltergeist', '~> 1.5', '>= 1.5.1'
   gem.add_development_dependency 'selenium-webdriver', '~> 2.43', '>= 2.43.0'
-  gem.add_development_dependency 'rack', '~> 1.6', '>= 1.6.0'
   gem.add_development_dependency 'guard', '~> 2.6', '>= 2.6.1'
   gem.add_development_dependency 'rb-inotify', '~> 0.9', '>= 0.9.5'
   gem.add_development_dependency 'cucumber', '~> 1.3', '>= 1.3.17'
-  gem.add_development_dependency 'airborne', '~> 0.1', '>= 0.1.10'
   gem.add_development_dependency 'rest-client', '~> 1.7', '>= 1.7.2'
   gem.add_development_dependency 'require_all', '~> 1.3', '>= 1.3.2'
   gem.add_development_dependency 'faker', '~> 1.2', '>= 1.2.0'
@@ -35,16 +33,24 @@ Gem::Specification.new do |gem|
   gem.add_runtime_dependency 'eventmachine', '~> 1.0', '>= 1.0.3'
   gem.add_runtime_dependency 'em-synchrony', '~> 1.0', '>= 1.0.3'
   gem.add_runtime_dependency 'em-http-request', '~> 1.1', '>= 1.1.2'
-  gem.add_runtime_dependency 'eventmachine_httpserver', '~> 0.2', '>= 0.2.1'
-  gem.add_runtime_dependency 'http_parser.rb', '~> 0.6', '>= 0.6.0'
-  gem.add_runtime_dependency 'multi_json', '~> 1.10', '>= 1.10.1'
-  gem.add_runtime_dependency 'thin', '~> 1.6', '>= 1.6.2'
   gem.add_runtime_dependency 'grape', '~> 0.10', '>= 0.10.1'
   gem.add_runtime_dependency 'activerecord', '~> 4.2', '>= 4.2.0'
-  gem.add_runtime_dependency 'sqlite3', '~> 1.3', '>= 1.3.10'
+  if RUBY_PLATFORM =~ /java/
+    #JVM Only
+    gem.add_runtime_dependency 'activerecord-jdbc-adapter'
+    gem.add_runtime_dependency 'activerecord-jdbcsqlite3-adapter'
+  else
+    #Non JVM
+    gem.add_runtime_dependency 'sqlite3', '~> 1.3', '>= 1.3.10'
+  end
+
+
+
   gem.add_runtime_dependency 'grape-kaminari', '~> 0.1', '>= 0.1.7'
   gem.add_runtime_dependency 'shoulda-matchers', '2.8.0.rc2'
   gem.add_runtime_dependency 'flavour_saver', '~> 0.3', '>= 0.3.4'
   gem.add_runtime_dependency 'thor', '~> 0.19', '>= 0.19.1'
-  gem.add_runtime_dependency 'rack-parser', '~> 0.6', '>= 0.6.1'
+  gem.add_runtime_dependency 'goliath', '~> 1.0', '>= 1.0.4'
+  gem.add_runtime_dependency 'goliath-proxy', '~> 0.0', '>= 0.0.1'
+
 end

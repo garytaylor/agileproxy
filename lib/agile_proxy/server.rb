@@ -3,13 +3,27 @@ require 'yaml'
 require 'cgi'
 require 'uri'
 require 'eventmachine'
-require 'thin'
 require 'grape'
 require 'agile_proxy/api/root'
 require 'agile_proxy/servers/api'
 require 'agile_proxy/servers/request_spec'
 require 'agile_proxy/servers/request_spec_direct'
 require 'forwardable'
+
+require 'goliath/api'
+require 'goliath/runner'
+
+# Example demonstrating how to use a custom Goliath runner
+#
+
+class Custom < Goliath::API
+  def response(env)
+    [200, {}, "hello!"]
+  end
+end
+
+
+
 module AgileProxy
   #
   # This class is responsible for controlling the underlying proxy and web servers

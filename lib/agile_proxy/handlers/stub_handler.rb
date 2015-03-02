@@ -2,7 +2,6 @@ require 'agile_proxy/handlers/handler'
 require 'agile_proxy/model/request_spec'
 require 'agile_proxy/router'
 require 'agile_proxy/model/application'
-require 'rack/parser'
 require 'action_dispatch'
 require 'base64'
 module AgileProxy

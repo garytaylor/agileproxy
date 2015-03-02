@@ -1,23 +1,80 @@
-require 'eventmachine'
-require 'thin'
 require 'faraday'
 require 'agile_proxy/cli'
+require 'socket'
 
-module Thin
-  module Backends
-    class TcpServer
-      def get_port
-        # seriously, eventmachine, how hard does getting a port have to be?
-        Socket.unpack_sockaddr_in(EM.get_sockname(@signature)).first
-      end
-    end
-  end
-end
+
+
 
 module AgileProxy
   module TestServer
+    class DummyApi
+      def response(env)
+        [200, {}, "hello!"]
+      end
+    end
+    class Server
+      attr_accessor :server_port
+      def initialize(world)
+        @world = world
+        at_exit do
+          cleanup
+        end
+        #Thin::Logging.silent = true
+      end
+      def pids
+        @pids ||= []
+      end
+      def cleanup
+        until pids.empty?
+          begin
+            Process.kill('INT', pids.pop);
+          rescue Errno::ESRCH
+            #Do nothing
+          end
+        end
+      end
+      def available_port(qty = 1)
+        # use Addrinfo
+        results = []
+        sockets_opened = []
+        while results.length < qty
+          socket = Socket.new(:INET, :STREAM, 0)
+          socket.bind(Addrinfo.tcp("127.0.0.1", 0))
+          port = socket.local_address.ip_port
+          results.push port unless results.include? port
+          sockets_opened.push socket
+        end
+        sockets_opened.each do |socket|
+          socket.close
+        end
+        results
+      end
+
+      def ruby
+        RbConfig.ruby
+      end
+      def start_test_servers
+        ports = available_port(3)
+        puts "Starting test server on #{ports[0]}"
+        pids.push spawn(ruby, "echo_server.rb", '--address', 'localhost', '--port', "#{ports[0]}")
+        puts "Starting test server on #{ports[1]}"
+        pids.push spawn(ruby, "echo_server.rb", '--address', 'localhost', '--port', "#{ports[1]}", '--ssl')
+        puts "Starting test server on #{ports[2]}"
+        pids.push spawn({'STATUS_CODE' => '500'}, ruby, "echo_server.rb", '--address', 'localhost', '--port', "#{ports[2]}")
+        @world.instance_eval do
+          @http_url  = "http://localhost:#{ports.shift}"
+          @https_url = "https://localhost:#{ports.shift}"
+          @error_url = "http://localhost:#{ports.shift}"
+          @http_url_no_proxy = "http://localhost:#{server_port}"
+          @https_url_no_proxy = "https://localhost:#{server_port}"
+        end
+      end
+
+
+    end
+
     def initialize(rspecParams=nil)
-      Thin::Logging.silent = true
+
     end
     def proxy_port
       3101
@@ -29,66 +86,20 @@ module AgileProxy
       3022
     end
 
+
     def start_test_servers
-      q = Queue.new
-      Thread.new do
-        EM.run do
-          echo = echo_app_setup
-
-          http_server = start_server(echo)
-          q.push http_server.backend.get_port
-
-          https_server = start_server(echo, true)
-          q.push https_server.backend.get_port
-
-          echo_error = echo_app_setup(500)
-          error_server = start_server(echo_error)
-          q.push error_server.backend.get_port
-        end
-      end
-
-      @http_url  = "http://localhost:#{q.pop}"
-      @https_url = "https://localhost:#{q.pop}"
-      @error_url = "http://localhost:#{q.pop}"
-      @http_url_no_proxy = "http://localhost:#{server_port}"
-      @https_url_no_proxy = "https://localhost:#{server_port}"
+      @test_servers = Server.new(self)
+      @test_servers.server_port = server_port
+      @test_servers.start_test_servers
     end
 
     def start_proxy_server
       Thread.new do
         cli = Cli.start(['start', proxy_port.to_s, server_port.to_s, api_port.to_s, '--env', 'test'])
       end
-      sleep 1
+      sleep 10
     end
 
-    def echo_app_setup(response_code = 200)
-      counter = 0
-      proc do |env|
-        req_body = env['rack.input'].read
-        request_info = "#{env['REQUEST_METHOD']} #{env['PATH_INFO']}"
-        res_body = request_info
-        res_body += "\n#{req_body}" unless req_body.empty?
-        counter += 1
-        [
-          response_code,
-          { 'HTTP-X-EchoServer' => request_info,
-            'HTTP-X-EchoCount' => "#{counter}" },
-          [res_body]
-        ]
-      end
-    end
 
-    def start_server(echo, ssl = false)
-      http_server = Thin::Server.new '127.0.0.1', 0, echo
-      if ssl
-        http_server.ssl = true
-        http_server.ssl_options = {
-          private_key_file: File.expand_path('../../fixtures/test-server.key', __FILE__),
-          cert_chain_file: File.expand_path('../../fixtures/test-server.crt', __FILE__)
-        }
-      end
-      http_server.start
-      http_server
-    end
   end
 end
