@@ -2,13 +2,13 @@ require 'spec_helper'
 describe AgileProxy::Servers::RequestSpecDirect do
   let(:subject) { AgileProxy::Servers::RequestSpecDirect }
   let(:rack_builder_class)  { Class.new }
-  let(:goliath_runner_class) { Class.new }
+  let(:rack_server_class) { Class.new }
   let(:rack_static_class) { Class.new }
   let(:stub_handler_class) { Class.new }
   before :each do
-    stub_const('Goliath::Rack::Builder', rack_builder_class)
+    stub_const('Rack::Builder', rack_builder_class)
     stub_const('Rack::Static', rack_static_class)
-    stub_const('Goliath::Runner', goliath_runner_class)
+    stub_const('Rack::Server', rack_server_class)
     stub_const('AgileProxy::StubHandler', stub_handler_class)
   end
   it 'Should start a rack server with a static handler when the start method is called' do
@@ -24,11 +24,7 @@ describe AgileProxy::Servers::RequestSpecDirect do
       rack_builder_class.new.instance_eval(&blk)
 
     end
-    expect_any_instance_of(goliath_runner_class).to receive(:run)
-    expect_any_instance_of(goliath_runner_class).to receive(:initialize).with([], nil)
-    expect_any_instance_of(goliath_runner_class).to receive(:address=).with('localhost')
-    expect_any_instance_of(goliath_runner_class).to receive(:port=).with('3030')
-    expect_any_instance_of(goliath_runner_class).to receive(:app=)
+    expect(rack_server_class).to receive(:start)
     subject.start('localhost', '3030', ['/ui', '/images'])
 
   end
@@ -44,11 +40,7 @@ describe AgileProxy::Servers::RequestSpecDirect do
       expect_any_instance_of(rack_builder_class).to receive(:run).with(kind_of(stub_handler_class))
       rack_builder_class.new.instance_eval(&blk)
     end
-    expect_any_instance_of(goliath_runner_class).to receive(:run)
-    expect_any_instance_of(goliath_runner_class).to receive(:initialize).with([], nil)
-    expect_any_instance_of(goliath_runner_class).to receive(:address=).with('localhost')
-    expect_any_instance_of(goliath_runner_class).to receive(:port=).with('3030')
-    expect_any_instance_of(goliath_runner_class).to receive(:app=)
+    expect(rack_server_class).to receive(:start)
     subject.start('localhost', '3030')
 
   end

@@ -10,7 +10,6 @@ RSpec.configure do |config|
   config.before :all, :type => :integration do
     start_test_servers
     start_proxy_server
-    debug_me = true
   end
 
 end

@@ -123,4 +123,5 @@ v0.1.19 - Recordings now record the request spec id.
             Recordings can now be accessed via /request_specs/:request_spec_id/recordings to provide recordings specific to the request spec
 v0.1.20 - An individual request spec can now be set to 'record_requests' rather than requiring the whole application to be in record mode which slows down every request
 v0.1.21 - Switched to goliath instead of thin.  The gem now installs under jruby as well as other platforms.
+v0.1.22 - Reverted 0.1.21 - Integration tests worked fine, but failed in real world scenario - never ending responses from stubs
 
