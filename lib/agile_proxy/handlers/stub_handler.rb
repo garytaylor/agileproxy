@@ -97,10 +97,10 @@ module AgileProxy
     def rack_app
       route_set = @route_set
       text_handler = plain_text_handler
-      Rack::Builder.new do
+      ::Rack::Builder.new do
         use ActionDispatch::ParamsParser, Mime::TEXT => text_handler
         use MergePostAndGetParams
-        use Rack::ContentLength
+        use ::Rack::ContentLength
         run route_set
       end
     end

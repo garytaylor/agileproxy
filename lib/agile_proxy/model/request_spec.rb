@@ -42,7 +42,7 @@ module AgileProxy
     # @param body [String] The request body
     # @return [Array] The rack response
     def call(params, headers, body)
-      response.nil? ? [204, { 'Content-Type' => 'text/plain' }, ''] : response.to_rack(params, headers, body)
+      response.nil? ? [204, { 'Content-Type' => 'text/plain'}, ''] : response.to_rack(params, headers, body)
     end
   end
 end

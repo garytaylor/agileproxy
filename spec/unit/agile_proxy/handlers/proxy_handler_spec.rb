@@ -86,7 +86,7 @@ describe AgileProxy::ProxyHandler do
   describe '#call' do
     it 'returns nil if it does not handle the request' do
       expect(subject).to receive(:handles_request?).and_return(false)
-      expect(subject.call(request.env)).to eql [404, {}, 'Not proxied']
+      expect(subject.call(request.env)).to eql [404, {}, ['Not proxied']]
     end
 
     context 'with a handled request' do
@@ -111,20 +111,20 @@ describe AgileProxy::ProxyHandler do
 
       it 'Should pass through a not allowed response' do
         allow(response_header).to receive(:status).and_return(503)
-        expect(subject.call(request.env)).to eql [503, { 'Connection' => 'close' }, 'The response body']
+        expect(subject.call(request.env)).to eql [503, { 'Connection' => 'close', 'Cache-Control' => 'max-age=3600' }, ['The response body']]
       end
       it 'returns any error in the response' do
         allow(em_request).to receive(:error).and_return('ERROR!')
-        expect(subject.call(request.env)).to eql([500, {}, "Request to #{request.url} failed with error: ERROR!"])
+        expect(subject.call(request.env)).to eql([500, {}, ["Request to #{request.url} failed with error: ERROR!"]])
       end
 
       it 'returns a hashed response if the request succeeds' do
-        expect(subject.call(request.env)).to eql([200, { 'Connection' => 'close' }, 'The response body'])
+        expect(subject.call(request.env)).to eql([200, { 'Connection' => 'close', 'Cache-Control' => 'max-age=3600' }, ['The response body']])
       end
 
       it 'returns nil if both the error and response are for some reason nil' do
         allow(em_request).to receive(:response).and_return(nil)
-        expect(subject.call(request.env)).to eql [404, {}, 'Not proxied']
+        expect(subject.call(request.env)).to eql [404, {}, ['Not proxied']]
       end
 
       it 'uses the timeouts defined in configuration' do

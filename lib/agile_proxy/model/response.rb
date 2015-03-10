@@ -36,6 +36,7 @@ module AgileProxy
     # @return [Array] A 'rack' response array (status, headers, body)
     def to_rack(input_params, _input_headers, _input_body)
       output_headers = headers.clone
+      output_headers.merge! 'Cache-Control' => 'no-store'
       output_content = content
       output_status_code = status_code
       if is_template

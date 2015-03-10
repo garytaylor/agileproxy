@@ -2,6 +2,7 @@ require 'agile_proxy/model/application'
 require 'agile_proxy/model/recording'
 require 'rack'
 require 'forwardable'
+require 'agile_proxy/rack/get_only_cache'
 module AgileProxy
   #
   # =The Central Request Handler
@@ -53,9 +54,18 @@ module AgileProxy
     private
 
     def rack_app
-      @__app ||= Rack::Builder.new do
-        run Rack::Cascade.new([StubHandler.new, ProxyHandler.new])
+      stub_handler = stub_handler_app
+      proxy_handler = proxy_handler_app
+      @__app ||= ::Rack::Builder.new do
+        use Rack::GetOnlyCache
+        run ::Rack::Cascade.new([stub_handler, proxy_handler])
       end
+    end
+    def stub_handler_app
+      @_stub_handler_app ||= StubHandler.new
+    end
+    def proxy_handler_app
+      @_proxy_handler_app ||= ProxyHandler.new
     end
   end
 end

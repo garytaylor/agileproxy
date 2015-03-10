@@ -22,7 +22,7 @@ module AgileProxy
           runner.address = server_host
           runner.port = server_port
           runner.app = ::Goliath::Rack::Builder.app do
-            use Rack::Static, root: File.join(ROOT, 'assets'), urls: static_dirs, index: 'index.html' unless static_dirs.empty?
+            use ::Rack::Static, root: File.join(ROOT, 'assets'), urls: static_dirs, index: 'index.html' unless static_dirs.empty?
             map '/' do
               run ::AgileProxy::StubHandler.new
             end

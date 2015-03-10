@@ -13,6 +13,8 @@ describe AgileProxy::RequestHandler do
     let(:proxy_handler) { Class.new }
     let(:application_class) { Class.new }
     let(:recordings_class) { Class.new }
+    let(:rack_builder_class) {Class.new}
+    let(:get_only_cache_class) {Class.new}
     let(:application) { double('Application', record_requests: false, recordings: recordings_class) }
     let(:mock_request_spec) {double('RequestSpec', id: 8, record_requests: false)}
 
@@ -20,7 +22,18 @@ describe AgileProxy::RequestHandler do
       stub_const 'AgileProxy::StubHandler', stub_handler
       stub_const 'AgileProxy::ProxyHandler', proxy_handler
       stub_const 'AgileProxy::Application', application_class
+      stub_const '::Rack::Builder', rack_builder_class
+      stub_const 'AgileProxy::Rack::GetOnlyCache', get_only_cache_class
       allow(application_class).to receive(:where).and_return [application]
+      #Make the rack builder just pass through whatever is passed to 'run' - to avoid the caching middleware etc..
+      rack_builder_instance = rack_builder_class.new
+      allow(rack_builder_class).to receive(:new) do |&blk|
+        rack_builder_instance.instance_eval(&blk)
+      end
+      allow(rack_builder_instance).to receive(:use).with(get_only_cache_class)
+      allow(rack_builder_instance).to receive(:run) do |app|
+        app
+      end
     end
 
     describe '#call' do
