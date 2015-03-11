@@ -33,7 +33,7 @@ module AgileProxy
         req = req.send(method.downcase, build_request_options(request.headers, body))
 
         if req.error
-          return [500, {}, "Request to #{request.url} failed with error: #{req.error}"]
+          return [500, {}, ["Request to #{request.url} failed with error: #{req.error}"]]
         end
 
         if req.response
@@ -47,7 +47,7 @@ module AgileProxy
           return [response[:status], response[:headers], response[:content]]
         end
       end
-      [404, {}, 'Not proxied']
+      [404, {}, ['Not proxied']]
     end
 
     private
@@ -74,9 +74,10 @@ module AgileProxy
       response = {
         status: req.response_header.status,
         headers: req.response_header.raw,
-        content: req.response.force_encoding('BINARY') }
+        content: [req.response.force_encoding('BINARY')] }
       response[:headers].merge!('Connection' => 'close')
       response[:headers].delete('Transfer-Encoding')
+      response[:headers].merge!('Cache-Control' => 'max-age=3600')
       response
     end
 

@@ -26,7 +26,7 @@ module AgileProxy
           runner.address = webserver_host
           runner.port = webserver_port
           runner.app = ::Goliath::Rack::Builder.app do
-            use Rack::Static, root: File.join(ROOT, 'assets'), urls: ['/ui'], index: 'index.html'
+            use ::Rack::Static, root: File.join(ROOT, 'assets'), urls: ['/ui'], index: 'index.html'
             map '/api' do
               run ::AgileProxy::Api::Root.new
             end

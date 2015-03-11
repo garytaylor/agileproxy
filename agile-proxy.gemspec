@@ -51,6 +51,7 @@ Gem::Specification.new do |gem|
   gem.add_runtime_dependency 'flavour_saver', '~> 0.3', '>= 0.3.4'
   gem.add_runtime_dependency 'thor', '~> 0.19', '>= 0.19.1'
   gem.add_runtime_dependency 'goliath', '~> 1.0', '>= 1.0.4'
+  gem.add_runtime_dependency 'rack-cache', '~> 1.2', '>= 1.2'
   gem.add_runtime_dependency 'goliath-proxy', '~> 0.0', '>= 0.0.1'
 
 end

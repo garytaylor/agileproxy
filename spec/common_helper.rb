@@ -7,8 +7,8 @@ module AgileProxy
         fake_error_buffer = StringIO.new
         url_parsed = URI.parse(opts[:url])
         env = {
-          'rack.input' => Rack::Lint::InputWrapper.new(fake_input_buffer),
-          'rack.errors' => Rack::Lint::ErrorWrapper.new(fake_error_buffer),
+          'rack.input' => ::Rack::Lint::InputWrapper.new(fake_input_buffer),
+          'rack.errors' => ::Rack::Lint::ErrorWrapper.new(fake_error_buffer),
           'REQUEST_METHOD' => (opts[:method] || 'GET').upcase,
           'REQUEST_PATH' => url_parsed.path,
           'PATH_INFO' => url_parsed.path,
