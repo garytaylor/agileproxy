@@ -125,4 +125,7 @@ v0.1.20 - An individual request spec can now be set to 'record_requests' rather 
 v0.1.21 - Switched to goliath instead of thin.  The gem now installs under jruby as well as other platforms.
 v0.1.22 - Reverted 0.1.21 - Integration tests worked fine, but failed in real world scenario - never ending responses from stubs
 v0.1.23 - Switched to goliath instead of thin.  The gem now installs under jruby as well as other platforms.
+v0.1.24 - Added caching
+v0.1.25 - Caching now disabled by default but enabled in config.
+            Direct server now functional
 
