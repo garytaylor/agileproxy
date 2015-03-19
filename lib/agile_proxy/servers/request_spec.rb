@@ -10,11 +10,11 @@ module AgileProxy
     class RequestSpec
 
       # Starts the server
-      def self.start
-        new.start
+      def self.start(options = {})
+        new(options).start
       end
-      def initialize
-        @request_handler = AgileProxy::RequestHandler.new
+      def initialize(options = {})
+        @request_handler = AgileProxy::RequestHandler.new enable_cache: options[:enable_cache]
       end
       # Starts the server
       def start

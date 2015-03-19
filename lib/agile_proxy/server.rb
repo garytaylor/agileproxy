@@ -111,7 +111,7 @@ module AgileProxy
         end
         AgileProxy::Servers::Api.start(webserver_host, webserver_port)
         AgileProxy::Servers::RequestSpecDirect.start(server_host, server_port)
-        @request_spec_server = AgileProxy::Servers::RequestSpec.start
+        @request_spec_server = AgileProxy::Servers::RequestSpec.start enable_cache: AgileProxy.config.enable_cache
         AgileProxy.log(:info, "agile-proxy: Proxy listening on #{url}, API webserver listening on #{webserver_url} and Direct webserver listening on #{server_url}")
       end
     end

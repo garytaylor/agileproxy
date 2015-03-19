@@ -16,6 +16,9 @@ module AgileProxy
 
     def_delegators :stub_handler, :stub
 
+    def initialize(options = {})
+      @options = options
+    end
     # A rack endpoint
     #
     # This method is called as a rack endpoint and returns a rack response.
@@ -56,8 +59,9 @@ module AgileProxy
     def rack_app
       stub_handler = stub_handler_app
       proxy_handler = proxy_handler_app
+      options = @options
       @__app ||= ::Rack::Builder.new do
-        use Rack::GetOnlyCache
+        use Rack::GetOnlyCache if options[:enable_cache]
         run ::Rack::Cascade.new([stub_handler, proxy_handler])
       end
     end

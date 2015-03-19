@@ -12,7 +12,7 @@ module AgileProxy
                   :persist_cache, :ignore_cache_port, :non_successful_cache_disabled, :non_successful_error_level,
                   :non_whitelisted_requests_disabled, :cache_path, :proxy_port, :proxied_request_inactivity_timeout,
                   :proxied_request_connect_timeout, :dynamic_jsonp, :dynamic_jsonp_keys,
-                  :webserver_host, :webserver_port, :server_host, :server_port, :database_config_file, :environment
+                  :webserver_host, :webserver_port, :server_host, :server_port, :database_config_file, :environment, :enable_cache
 
     def initialize
       @logger = defined?(Rails) ? Rails.logger : Logger.new(STDOUT)
@@ -43,6 +43,7 @@ module AgileProxy
       @server_host = 'localhost'
       @database_config_file = File.join(File.dirname(__FILE__), '..', '..', 'config.yml')
       @environment = ENV['AGILE_PROXY_ENV']
+      @enable_cache = false
     end
   end
 

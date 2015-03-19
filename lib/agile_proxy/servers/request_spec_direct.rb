@@ -10,7 +10,7 @@ module AgileProxy
     # using REST requests.
     # This allows remote programming of the proxy using either a client adapter or the built in user interface
     module RequestSpecDirect
-      ROOT = File.expand_path '../../../', File.dirname(__FILE__)
+      ROOT = Dir.pwd
       class << self
         #
         # Starts the server on the given host and port
@@ -21,10 +21,10 @@ module AgileProxy
           runner = ::Goliath::Runner.new([], nil)
           runner.address = server_host
           runner.port = server_port
+          notFoundApp = -> {[404, {}, 'Not Found']}
           runner.app = ::Goliath::Rack::Builder.app do
-            use ::Rack::Static, root: File.join(ROOT, 'assets'), urls: static_dirs, index: 'index.html' unless static_dirs.empty?
             map '/' do
-              run ::AgileProxy::StubHandler.new
+              run ::Rack::Cascade.new([::Rack::Static.new(notFoundApp, root: ROOT, urls: ['']), ::AgileProxy::StubHandler.new])
             end
           end
           runner.run

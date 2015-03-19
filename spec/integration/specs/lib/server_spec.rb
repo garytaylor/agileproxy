@@ -373,6 +373,12 @@ shared_examples_for 'a cache' do
     end.to_not change { r.body }
   end
 end
+
+shared_examples_for 'a static server' do
+  it 'Should serve a file from the current directory' do
+    expect(http.get('/spec/fixtures/example_static_file.html').body).to eql 'Hello World'
+  end
+end
 describe AgileProxy::Server, :type => :integration do
   extend AgileProxy::Test::Integration::RequestSpecHelper
   describe 'Without recording' do
@@ -423,6 +429,7 @@ describe AgileProxy::Server, :type => :integration do
           let!(:url)  { @http_url_no_proxy }
           let!(:http) { @http_no_proxy }
           it_should_behave_like 'a request stub'
+          it_should_behave_like 'a static server'
         end
       end
     end
