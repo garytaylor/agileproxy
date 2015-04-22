@@ -11,9 +11,12 @@ Gem::Specification.new do |gem|
   gem.files         = `git ls-files`.split($\).concat(Dir.glob 'assets/ui/bower_components/**/*')
   gem.executables   = gem.files.grep(%r{^bin/}).map { |f| File.basename(f) }
   gem.test_files    = gem.files.grep(%r{^(test|spec|features)/})
-  gem.name          = 'agile-proxy'
+  gem.name          = RUBY_PLATFORM =~ /java/ ? 'agile-proxy-jruby' : 'agile-proxy'
   gem.require_paths = ['lib']
   gem.version       = AgileProxy::VERSION
+  if RUBY_PLATFORM =~ /java/
+    gem.platform = 'jruby'
+  end
 
   gem.add_development_dependency 'rake', '~> 0'
   gem.add_development_dependency 'rspec', '~> 3.1', '>= 3.1.0'

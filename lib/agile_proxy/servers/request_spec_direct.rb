@@ -24,7 +24,7 @@ module AgileProxy
           notFoundApp = -> {[404, {}, 'Not Found']}
           runner.app = ::Goliath::Rack::Builder.app do
             map '/' do
-              run ::Rack::Cascade.new([::Rack::Static.new(notFoundApp, root: ROOT, urls: ['']), ::AgileProxy::StubHandler.new])
+              run ::Rack::Cascade.new([::Rack::Static.new(notFoundApp, root: ROOT, urls: [''], index: 'index.html'), ::AgileProxy::StubHandler.new])
             end
           end
           runner.run

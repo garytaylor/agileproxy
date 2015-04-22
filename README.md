@@ -128,4 +128,5 @@ v0.1.23 - Switched to goliath instead of thin.  The gem now installs under jruby
 v0.1.24 - Added caching
 v0.1.25 - Caching now disabled by default but enabled in config.
             Direct server now functional
+v0.1.26 - index.html is now setup as the root of a static dir
 
